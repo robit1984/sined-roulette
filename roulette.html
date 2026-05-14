@@ -29,13 +29,14 @@
             border-radius: 64px;
             padding: 28px 20px 36px;
             width: 100%;
-            max-width: 480px;
+            max-width: 460px;
             margin: 0 auto;
             text-align: center;
             box-shadow: 0 30px 40px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 160, 50, 0.25);
         }
 
+        /* Бренд + Джекпот — ровно по краям */
         .brand-row {
             display: flex;
             justify-content: space-between;
@@ -76,6 +77,7 @@
             text-shadow: 0 0 6px #ffa41e80;
         }
 
+        /* Колесо */
         .wheel-wrapper {
             background: #0f1220;
             border-radius: 100px;
@@ -93,6 +95,7 @@
             filter: drop-shadow(0 8px 12px #00000060);
         }
 
+        /* Кнопка */
         .spin-btn {
             background: radial-gradient(circle at 30% 20%, #FFBB44, #E05E00);
             border: none;
@@ -117,6 +120,7 @@
             box-shadow: 0 3px 0 #8B3C00;
         }
 
+        /* Результат */
         .result-area {
             background: #00000050;
             padding: 12px 14px;
@@ -129,6 +133,7 @@
             word-break: break-word;
         }
 
+        /* Офферы */
         .offers {
             background: #1a1e2c60;
             border-radius: 40px;
@@ -168,7 +173,7 @@
         <div class="sined-logo">⚡ SINED</div>
         <div class="jackpot-box">
             <div class="jackpot-label">ДЖЕКПОТ</div>
-            <div class="jackpot-value" id="jackpotDisplay">204</div>
+            <div class="jackpot-value" id="jackpotDisplay">206</div>
         </div>
     </div>
 
@@ -195,7 +200,7 @@
     let tg = window.Telegram?.WebApp;
     if (tg) { tg.ready(); tg.expand(); }
 
-    // === ДЖЕКПОТ (локальное хранилище) ===
+    // Джекпот
     let jackpot = localStorage.getItem("sined_jackpot");
     if (!jackpot) jackpot = 200;
     else jackpot = parseInt(jackpot);
@@ -207,28 +212,25 @@
         document.getElementById("jackpotDisplay").innerText = jackpot;
     }
 
-    // === 7 СЕКТОРОВ, СИММЕТРИЧНО. 3 ИЗ НИХ — 0 л ===
-    // Индексы: 0,1,2,3,4,5,6
-    const sectors = [
-        { name: "0 л", value: 0 },   // сектор 0
-        { name: "1 л", value: 1 },   // сектор 1
-        { name: "0 л", value: 0 },   // сектор 2
-        { name: "2 л", value: 2 },   // сектор 3
-        { name: "0 л", value: 0 },   // сектор 4
-        { name: "3 л", value: 3 },   // сектор 5
-        { name: "5 л", value: 5 }    // сектор 6
+    // Призы (твоя исходная логика)
+    const prizes = [
+        { name: "0 л", value: 0 },
+        { name: "1 л", value: 1 },
+        { name: "2 л", value: 2 },
+        { name: "3 л", value: 3 },
+        { name: "5 л", value: 5 }
     ];
 
-    function getPrizeByIndex(index) {
-        return sectors[index % sectors.length];
-    }
-
     function getRandomPrize() {
-        const idx = Math.floor(Math.random() * sectors.length);
-        return getPrizeByIndex(idx);
+        let r = Math.random();
+        if (r < 0.4) return prizes[0];
+        if (r < 0.7) return prizes[1];
+        if (r < 0.85) return prizes[2];
+        if (r < 0.95) return prizes[3];
+        return prizes[4];
     }
 
-    // === ЗВУК (синтез) ===
+    // Звук
     let audioCtx = null;
     function initAudio() {
         if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -272,7 +274,6 @@
         const addToJackpot = Math.floor(Math.random() * 5) + 1;
         updateJackpot(addToJackpot);
 
-        // Визуальный эффект вращения
         const rotations = 360 * 8 + Math.floor(Math.random() * 720);
         wheel.style.transform = `rotate(${rotations}deg)`;
 
