@@ -1,3 +1,8 @@
+# 🎰 SINED Рулетка v3 — Все исправления
+
+Вижу проблемы на скриншоте — колесо выходит за рамку, кнопка огромная, надписи перевёрнуты. Всё исправляю:
+
+```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -14,330 +19,394 @@
             color:#fff;
         }
 
-        /* =================== */
-        /*  ФОН: НЕБО + ГРУЗОВИКИ */
-        /* =================== */
+        /* ====== ФОН ====== */
         .bg-scene{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
         .bg-canvas{width:100%;height:100%;display:block}
 
-        /* =================== */
-        /*  БЕГУЩИЕ ЛЕНТОЧКИ    */
-        /* =================== */
+        /* ====== БОКОВЫЕ ЛЕНТОЧКИ ====== */
         .ribbon{
-            position:fixed;z-index:2;overflow:hidden;
-            background:linear-gradient(90deg,rgba(0,212,255,0.08),rgba(0,212,255,0.03));
-            border:1px solid rgba(0,212,255,0.15);
+            position:fixed;z-index:2;
+            overflow:hidden;
             white-space:nowrap;
+            pointer-events:none;
         }
         .ribbon-left{
-            top:50%;left:0;transform:translateY(-50%) rotate(-90deg);
-            transform-origin:0 0;
-            padding:6px 0;width:100vh;
+            top:0;left:0;width:32px;height:100vh;
+            background:linear-gradient(180deg,rgba(0,212,255,0.06),rgba(0,212,255,0.02));
+            border-right:1px solid rgba(0,212,255,0.12);
+            writing-mode:vertical-rl;
+            text-orientation:mixed;
+            display:flex;align-items:center;justify-content:center;
+            overflow:hidden;
         }
         .ribbon-right{
-            top:50%;right:0;transform:translateY(-50%) rotate(90deg);
-            transform-origin:100% 0;
-            padding:6px 0;width:100vh;
+            top:0;right:0;width:32px;height:100vh;
+            background:linear-gradient(180deg,rgba(0,212,255,0.06),rgba(0,212,255,0.02));
+            border-left:1px solid rgba(0,212,255,0.12);
+            writing-mode:vertical-lr;
+            text-orientation:mixed;
+            display:flex;align-items:center;justify-content:center;
+            overflow:hidden;
         }
-        .ribbon-track{
+        .ribbon-inner{
             display:inline-block;
-            animation:ribbonScroll 20s linear infinite;
-            font-size:12px;letter-spacing:2px;color:#00d4ff;
-            font-weight:600;
+            animation:ribbonV 18s linear infinite;
+            font-size:11px;letter-spacing:3px;color:rgba(0,212,255,0.5);
+            font-weight:500;
         }
-        .ribbon-track span{margin:0 30px}
-        @keyframes ribbonScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+        .ribbon-inner span{display:block;padding:15px 0}
+        @keyframes ribbonV{0%{transform:translateY(0)}100%{transform:translateY(-50%)}}
 
-        /* =================== */
-        /*  ОСНОВНОЕ ОКНО       */
-        /* =================== */
+        /* ====== ОБЁРТКА ====== */
         .wrapper{
             position:relative;z-index:5;
             display:flex;flex-direction:column;align-items:center;
-            min-height:100vh;padding:20px 60px 90px;
+            min-height:100vh;
+            padding:12px 40px 80px;
         }
 
-        .brand-header{text-align:center;margin-bottom:8px}
-        .brand-logo{
-            font-size:42px;font-weight:900;letter-spacing:14px;
-            background:linear-gradient(135deg,#00d4ff 0%,#a29bfe 50%,#ff006e 100%);
+        /* ====== ЛОГОТИП ====== */
+        .logo-block{
+            text-align:center;
+            margin-bottom:6px;
+            padding-top:8px;
+        }
+        .logo-img{
+            width:72px;height:72px;
+            object-fit:contain;
+            filter:drop-shadow(0 0 15px rgba(0,140,255,0.4));
+            margin-bottom:2px;
+        }
+        .logo-text{
+            font-size:28px;font-weight:900;letter-spacing:10px;
+            background:linear-gradient(135deg,#0088cc 0%,#00cc88 50%,#00d4ff 100%);
             -webkit-background-clip:text;-webkit-text-fill-color:transparent;
             background-clip:text;
-            filter:drop-shadow(0 0 25px rgba(0,212,255,0.5));
-            line-height:1.1;
+            filter:drop-shadow(0 0 15px rgba(0,180,255,0.3));
+            line-height:1;
         }
-        .brand-slogan{font-size:11px;color:#556;letter-spacing:2px;margin-top:4px;max-width:320px}
-        .brand-slogan b{color:#00d4ff;font-weight:600}
+        .logo-sub{
+            font-size:9px;color:#445;letter-spacing:3px;
+            text-transform:uppercase;margin-top:2px;
+        }
 
-        /* =================== */
-        /*  КАРТОЧКА           */
-        /* =================== */
+        /* ====== КАРТОЧКА ====== */
         .game-card{
-            width:100%;max-width:400px;
+            width:100%;max-width:380px;
             background:rgba(10,10,18,0.92);
             backdrop-filter:blur(20px);
-            border:1px solid rgba(0,212,255,0.2);
-            border-radius:28px;
-            padding:18px 14px 16px;
-            box-shadow:0 0 60px rgba(0,212,255,0.12);
+            border:1px solid rgba(0,212,255,0.18);
+            border-radius:24px;
+            padding:14px 12px 14px;
+            box-shadow:0 0 50px rgba(0,212,255,0.1);
             text-align:center;
         }
 
-        /* =================== */
-        /*  ДЖЕКПОТ БАР        */
-        /* =================== */
+        /* ====== ДЖЕКПОТ БАР ====== */
         .jp-bar{
-            background:linear-gradient(135deg,rgba(255,0,110,0.06),rgba(255,140,66,0.06));
-            border:1px solid rgba(255,0,110,0.25);
-            border-radius:12px;padding:8px 0;margin-bottom:12px;
+            background:linear-gradient(135deg,rgba(255,0,110,0.05),rgba(255,140,66,0.05));
+            border:1px solid rgba(255,0,110,0.2);
+            border-radius:10px;padding:7px 0;margin-bottom:10px;
             overflow:hidden;white-space:nowrap;
         }
-        .jp-track{display:inline-block;animation:jpScroll 14s linear infinite;font-size:13px}
-        .jp-track span{margin:0 20px;color:#666}
-        .jp-l{color:#ff006e;font-weight:800}
+        .jp-track{display:inline-block;animation:jpScroll 16s linear infinite;font-size:12px}
+        .jp-track span{margin:0 18px;color:#555}
+        .jp-l{color:#ff006e;font-weight:700}
         .jp-v{color:#ffd700;font-weight:800}
         @keyframes jpScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 
-        /* =================== */
-        /*  КОЛЕСО              */
-        /* =================== */
-        .wheel-sec{position:relative;margin:0 auto 10px}
+        /* ====== КОЛЕСО — ИСПРАВЛЕНА ЦЕНТРОВКА ====== */
+        .wheel-sec{position:relative;margin:0 auto 8px}
         .wheel-wrap{
             position:relative;
-            width:min(70vw,310px);height:min(70vw,310px);
+            /* Фиксированный размер чтобы колесо НЕ вылезало */
+            width:280px;height:280px;
             margin:0 auto;
+            overflow:hidden;
+            border-radius:50%;
+        }
+        @media(min-width:400px){
+            .wheel-wrap{width:310px;height:310px}
         }
         #wheelCanvas{
-            width:100%!important;height:100%!important;
-            display:block;border-radius:50%;
+            /* Canvas ТОЧНО по размеру контейнера */
+            width:100%!important;
+            height:100%!important;
+            display:block;
+            border-radius:50%;
             box-shadow:
-                0 0 40px rgba(0,212,255,0.35),
-                0 0 80px rgba(0,212,255,0.1),
-                inset 0 0 30px rgba(0,0,0,0.5);
-            transition:filter .3s;
+                0 0 30px rgba(0,212,255,0.3),
+                0 0 60px rgba(0,212,255,0.08),
+                inset 0 0 25px rgba(0,0,0,0.5);
         }
-        .wheel-ring{
-            position:absolute;inset:-5px;border-radius:50%;
-            border:2px solid rgba(0,212,255,0.25);
-            box-shadow:0 0 12px rgba(0,212,255,0.15);
+        .wheel-outer-ring{
+            position:absolute;inset:-4px;
+            border-radius:50%;
+            border:2px solid rgba(0,212,255,0.2);
+            box-shadow:0 0 10px rgba(0,212,255,0.12);
             pointer-events:none;
         }
-        .pointer{position:absolute;top:-6px;left:50%;transform:translateX(-50%);z-index:20;text-align:center}
-        .pointer-glow{
-            width:12px;height:12px;background:#ffd700;border-radius:50%;
-            margin:0 auto 1px;
-            box-shadow:0 0 12px rgba(255,215,0,0.7),0 0 25px rgba(255,215,0,0.3);
+        .pointer{
+            position:absolute;
+            top:-2px;left:50%;
+            transform:translateX(-50%);
+            z-index:20;text-align:center;
         }
-        .pointer-tri{
+        .ptr-dot{
+            width:10px;height:10px;
+            background:#ffd700;border-radius:50%;
+            margin:0 auto 1px;
+            box-shadow:0 0 10px rgba(255,215,0,0.6),0 0 20px rgba(255,215,0,0.2);
+        }
+        .ptr-arrow{
             width:0;height:0;
-            border-left:12px solid transparent;border-right:12px solid transparent;
-            border-top:28px solid #ffd700;
-            filter:drop-shadow(0 0 6px rgba(255,215,0,0.5));
+            border-left:10px solid transparent;
+            border-right:10px solid transparent;
+            border-top:24px solid #ffd700;
+            filter:drop-shadow(0 2px 4px rgba(255,215,0,0.4));
         }
 
-        /* =================== */
-        /*  ПРИЗ + КНОПКА       */
-        /* =================== */
+        /* ====== ПРИЗ ====== */
         .prize-box{
-            background:rgba(0,0,0,0.35);border:1px solid rgba(0,212,255,0.18);
-            border-radius:14px;padding:10px;margin:10px 0 12px;
+            background:rgba(0,0,0,0.3);
+            border:1px solid rgba(0,212,255,0.15);
+            border-radius:12px;padding:8px;margin:8px 0 10px;
         }
-        .prize-lbl{color:#556;font-size:11px;letter-spacing:3px;text-transform:uppercase}
+        .prize-lbl{color:#556;font-size:10px;letter-spacing:3px;text-transform:uppercase}
         .prize-val{
-            font-size:40px;font-weight:800;color:#00ffaa;
-            text-shadow:0 0 20px rgba(0,255,170,0.4);
+            font-size:36px;font-weight:800;color:#00ffaa;
+            text-shadow:0 0 18px rgba(0,255,170,0.3);
             transition:color .3s;
         }
-        .prize-val small{font-size:15px;color:#00d4ff;font-weight:500}
-        .prize-val.pv-jackpot{color:#ff006e;text-shadow:0 0 30px rgba(255,0,110,0.5)}
-        .prize-val.pv-chance{color:#ffd700;text-shadow:0 0 30px rgba(255,215,0,0.5)}
-        .prize-val.pv-lose{color:#ff4455;text-shadow:0 0 15px rgba(255,68,85,0.3)}
+        .prize-val small{font-size:14px;color:#00d4ff;font-weight:500}
+        .prize-val.pv-jp{color:#ff006e;text-shadow:0 0 25px rgba(255,0,110,0.5)}
+        .prize-val.pv-ch{color:#ffd700;text-shadow:0 0 25px rgba(255,215,0,0.5)}
+        .prize-val.pv-lose{color:#ff4455;text-shadow:0 0 12px rgba(255,68,85,0.3)}
 
+        /* ====== КНОПКА — УМЕНЬШЕНА ====== */
         .spin-btn{
             background:linear-gradient(145deg,#00d4ff,#0066aa);
-            border:1px solid rgba(255,255,255,0.12);
-            color:#0a0a0f;font-size:18px;font-weight:700;
-            padding:14px;border-radius:50px;width:100%;
-            cursor:pointer;letter-spacing:3px;
-            box-shadow:0 4px 20px rgba(0,212,255,0.3);
+            border:1px solid rgba(255,255,255,0.1);
+            color:#0a0a0f;
+            font-size:15px;
+            font-weight:700;
+            padding:10px 20px;
+            border-radius:40px;
+            width:auto;
+            min-width:180px;
+            cursor:pointer;letter-spacing:2px;
+            box-shadow:0 3px 15px rgba(0,212,255,0.25);
             transition:all .2s;position:relative;overflow:hidden;
         }
         .spin-btn::after{
             content:'';position:absolute;inset:0;
-            background:linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent);
+            background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);
             transform:translateX(-100%);
-            animation:btnShine 3s ease-in-out infinite;
+            animation:btnShine 4s ease-in-out infinite;
         }
-        @keyframes btnShine{0%,80%,100%{transform:translateX(-100%)}90%{transform:translateX(100%)}}
-        .spin-btn:hover{box-shadow:0 4px 30px rgba(0,212,255,0.5);transform:translateY(-1px)}
+        @keyframes btnShine{0%,75%,100%{transform:translateX(-100%)}85%{transform:translateX(100%)}}
+        .spin-btn:hover{box-shadow:0 3px 25px rgba(0,212,255,0.4);transform:translateY(-1px)}
         .spin-btn:active{transform:scale(.97)}
         .spin-btn:disabled{opacity:.35;box-shadow:none;cursor:not-allowed;transform:none}
-        .spin-btn .cost{display:block;font-size:10px;font-weight:400;opacity:.65;margin-top:1px;letter-spacing:1px}
+        .spin-btn .cost{display:block;font-size:9px;font-weight:400;opacity:.6;margin-top:1px;letter-spacing:1px}
 
-        /* =================== */
-        /*  ЭКОСИСТЕМА          */
-        /* =================== */
+        /* ====== ЭКОСИСТЕМА ====== */
         .eco{
-            text-align:left;margin-top:12px;padding:12px;
-            background:rgba(108,92,231,0.06);
-            border:1px solid rgba(108,92,231,0.18);
-            border-radius:12px;font-size:12px;line-height:1.7;
+            text-align:left;margin-top:10px;padding:10px;
+            background:rgba(108,92,231,0.05);
+            border:1px solid rgba(108,92,231,0.15);
+            border-radius:10px;font-size:11px;line-height:1.6;
         }
-        .eco-t{color:#a29bfe;font-weight:700;margin-bottom:5px;font-size:12px}
-        .eco-i{color:#888}
+        .eco-t{color:#a29bfe;font-weight:700;margin-bottom:4px;font-size:11px}
+        .eco-i{color:#777}
         .eco-i b{font-weight:600}
-        .back{display:inline-block;margin-top:10px;color:rgba(0,212,255,.5);text-decoration:none;font-size:12px}
+
+        /* ====== РАЗРАБОТЧИКИ ====== */
+        .dev-footer{
+            margin-top:10px;padding:8px;
+            background:rgba(0,212,255,0.04);
+            border:1px solid rgba(0,212,255,0.1);
+            border-radius:10px;
+            font-size:10px;color:#445;
+            text-align:center;line-height:1.5;
+        }
+        .dev-footer a{color:#00d4ff;text-decoration:none;font-weight:600}
+        .dev-footer a:hover{text-decoration:underline}
+
+        .back{display:inline-block;margin-top:8px;color:rgba(0,212,255,.4);text-decoration:none;font-size:11px}
         .back:hover{color:#00d4ff}
 
-        /* =================== */
-        /*  КОНФЕТТИ            */
-        /* =================== */
+        /* ====== КОНФЕТТИ ====== */
         .confetti-layer{position:fixed;inset:0;pointer-events:none;z-index:50;overflow:hidden}
-        .confetti{
-            position:absolute;border-radius:2px;
-            animation:confettiFall linear forwards;
-        }
-        @keyframes confettiFall{
+        .confetti{position:absolute;border-radius:2px;animation:confFall linear forwards}
+        @keyframes confFall{
             0%{transform:translateY(0) rotate(0deg) scale(1);opacity:1}
-            100%{transform:translateY(110vh) rotate(720deg) scale(0.3);opacity:0}
+            100%{transform:translateY(110vh) rotate(720deg) scale(.2);opacity:0}
         }
 
-        /* =================== */
-        /*  ЭКРАН ПОБЕДЫ        */
-        /* =================== */
-        .win-overlay{
+        /* ====== ЭКРАН ПОБЕДЫ ====== */
+        .win-ov{
             position:fixed;inset:0;z-index:60;
-            display:flex;align-items:center;justify-content:center;
-            flex-direction:column;
-            background:rgba(0,0,0,0.75);
-            backdrop-filter:blur(8px);
-            opacity:0;pointer-events:none;
-            transition:opacity .4s;
+            display:flex;align-items:center;justify-content:center;flex-direction:column;
+            background:rgba(0,0,0,.75);backdrop-filter:blur(10px);
+            opacity:0;pointer-events:none;transition:opacity .4s;
         }
-        .win-overlay.active{opacity:1;pointer-events:auto}
-        .win-text{
-            font-size:48px;font-weight:900;
-            text-align:center;line-height:1.2;
-            animation:winPulse .6s ease-in-out infinite alternate;
+        .win-ov.active{opacity:1;pointer-events:auto}
+        .win-ov-logo{width:60px;height:60px;object-fit:contain;margin-bottom:10px;filter:drop-shadow(0 0 15px rgba(0,140,255,0.5))}
+        .win-t{
+            font-size:42px;font-weight:900;text-align:center;line-height:1.2;
+            animation:winP .6s ease-in-out infinite alternate;
         }
-        .win-sub{font-size:18px;color:#aaa;margin-top:10px;text-align:center}
-        .win-close{
-            margin-top:25px;padding:10px 30px;
-            background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);
-            border-radius:20px;color:#fff;font-size:14px;cursor:pointer;
-            transition:all .2s;
+        .win-s{font-size:16px;color:#aaa;margin-top:8px;text-align:center;max-width:300px}
+        .win-c{
+            margin-top:20px;padding:8px 24px;
+            background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
+            border-radius:18px;color:#fff;font-size:13px;cursor:pointer;transition:all .2s;
         }
-        .win-close:hover{background:rgba(255,255,255,0.2)}
-        @keyframes winPulse{
-            0%{transform:scale(1);filter:brightness(1)}
-            100%{transform:scale(1.05);filter:brightness(1.3)}
-        }
+        .win-c:hover{background:rgba(255,255,255,.15)}
+        @keyframes winP{0%{transform:scale(1);filter:brightness(1)}100%{transform:scale(1.04);filter:brightness(1.2)}}
 
-        /* =================== */
-        /*  ПАРТНЁРЫ            */
-        /* =================== */
+        /* ====== ПАРТНЁРЫ ====== */
         .pbar{
             position:fixed;bottom:0;left:0;width:100%;
-            background:rgba(7,7,14,0.96);
-            border-top:1px solid rgba(0,212,255,0.12);
-            z-index:15;padding:7px 0;overflow:hidden;white-space:nowrap;
+            background:rgba(7,7,14,.96);
+            border-top:1px solid rgba(0,212,255,.1);
+            z-index:15;padding:6px 0;overflow:hidden;white-space:nowrap;
         }
-        .ptrack{display:inline-block;animation:pScroll 40s linear infinite;font-size:12px}
+        .ptrack{display:inline-block;animation:pScr 40s linear infinite;font-size:11px}
         .pitem{
-            display:inline-block;color:#bbb;margin:0 18px;
-            padding:3px 11px;background:rgba(0,212,255,0.05);
-            border:1px solid rgba(0,212,255,0.12);border-radius:14px;
+            display:inline-block;color:#aaa;margin:0 15px;
+            padding:3px 10px;background:rgba(0,212,255,.04);
+            border:1px solid rgba(0,212,255,.1);border-radius:12px;
         }
         .pitem em{color:#00ffaa;font-weight:700;font-style:normal}
-        @keyframes pScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+        @keyframes pScr{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 
-        /* =================== */
-        /*  ЗВУК + МУЗЫКА       */
-        /* =================== */
-        .top-btns{position:fixed;top:12px;right:12px;z-index:100;display:flex;gap:6px}
-        .top-btn{
-            width:34px;height:34px;
-            background:rgba(0,0,0,0.6);border:1px solid rgba(0,212,255,0.25);
-            border-radius:50%;font-size:15px;cursor:pointer;
+        /* ====== КНОПКИ УПРАВЛЕНИЯ ====== */
+        .ctrl-btns{position:fixed;top:10px;right:10px;z-index:100;display:flex;gap:5px}
+        .ctrl-btn{
+            width:32px;height:32px;
+            background:rgba(0,0,0,.5);border:1px solid rgba(0,212,255,.2);
+            border-radius:50%;font-size:14px;cursor:pointer;
             display:flex;align-items:center;justify-content:center;
             transition:all .2s;color:#fff;
         }
-        .top-btn:hover{border-color:#00d4ff}
-        .top-btn.muted{opacity:.5}
+        .ctrl-btn:hover{border-color:#00d4ff}
+        .ctrl-btn.off{opacity:.4}
     </style>
 </head>
 <body>
 
-<!-- ====== ФОН ====== -->
+<!-- ФОН -->
 <canvas class="bg-canvas bg-scene" id="bgCanvas"></canvas>
 
-<!-- ====== ЛЕНТОЧКИ ====== -->
-<div class="ribbon ribbon-left"><div class="ribbon-track">
-    <span>✦ Здесь может быть ваша реклама ✦</span>
-    <span>✦ Здесь может быть ваша реклама ✦</span>
-    <span>✦ Здесь может быть ваша реклама ✦</span>
-    <span>✦ Здесь может быть ваша реклама ✦</span>
-</div></div>
-<div class="ribbon ribbon-right"><div class="ribbon-track">
-    <span>🚛 Топливная компания SINED — одна из лучших в Санкт-Петербурге и Ленинградской области 🛢️</span>
-    <span>🚛 Топливная компания SINED — одна из лучших в Санкт-Петербурге и Ленинградской области 🛢️</span>
-</div></div>
-
-<!-- ====== КНОПКИ ====== -->
-<div class="top-btns">
-    <button class="top-btn" id="btnSound" onclick="toggleSound()" title="Звук">🔊</button>
-    <button class="top-btn" id="btnMusic" onclick="toggleMusic()" title="Музыка">🎵</button>
+<!-- БОКОВЫЕ ЛЕНТОЧКИ -->
+<div class="ribbon ribbon-left">
+    <div class="ribbon-inner">
+        <span>✦ Здесь может быть ваша реклама ✦</span>
+        <span>🛢️ Топливная компания SINED ✦</span>
+        <span>✦ Здесь может быть ваша реклама ✦</span>
+        <span>🛢️ Топливная компания SINED ✦</span>
+        <span>✦ Здесь может быть ваша реклама ✦</span>
+        <span>🛢️ Топливная компания SINED ✦</span>
+        <span>✦ Здесь может быть ваша реклама ✦</span>
+        <span>🛢️ Топливная компания SINED ✦</span>
+    </div>
+</div>
+<div class="ribbon ribbon-right">
+    <div class="ribbon-inner">
+        <span>🚛 Одна из лучших в СПб и ЛО</span>
+        <span>⛽ Доставка топлива 24/7</span>
+        <span>🚛 Одна из лучших в СПб и ЛО</span>
+        <span>⛽ Доставка топлива 24/7</span>
+        <span>🚛 Одна из лучших в СПб и ЛО</span>
+        <span>⛽ Доставка топлива 24/7</span>
+        <span>🚛 Одна из лучших в СПб и ЛО</span>
+        <span>⛽ Доставка топлива 24/7</span>
+    </div>
 </div>
 
-<!-- ====== ИГРА ====== -->
+<!-- УПРАВЛЕНИЕ -->
+<div class="ctrl-btns">
+    <button class="ctrl-btn" id="btnSfx" onclick="toggleSfx()" title="Звуки">🔊</button>
+    <button class="ctrl-btn off" id="btnMus" onclick="toggleMus()" title="Музыка">🎵</button>
+</div>
+
+<!-- ИГРА -->
 <div class="wrapper">
-    <div class="brand-header">
-        <div class="brand-logo">SINED</div>
-        <div class="brand-slogan">Топливная компания <b>SINED</b> — одна из лучших в Санкт-Петербурге и Ленинградской области</div>
+
+    <!-- ЛОГОТИП -->
+    <div class="logo-block">
+        <img src="logo.png" alt="SINED" class="logo-img"
+             onerror="this.style.display='none'">
+        <div class="logo-text">СИНЕД</div>
+        <div class="logo-sub">Топливная компания • Санкт-Петербург</div>
     </div>
 
     <div class="game-card">
+
+        <!-- ДЖЕКПОТ -->
         <div class="jp-bar"><div class="jp-track">
-            <span class="jp-l">🏆 ДЖЕКПОТ: <span class="jp-v" id="jp1">0</span> литров!</span>
+            <span class="jp-l">🏆 ДЖЕКПОТ: <span class="jp-v" id="jp1">0</span> л</span>
             <span>🎰 Крутите — выигрывайте!</span>
-            <span>📈 Каждый спин +1 л в джекпот</span>
-            <span>🎯 ШАНС — бесплатная доставка или брендированные призы!</span>
-            <span class="jp-l">🏆 ДЖЕКПОТ: <span class="jp-v" id="jp2">0</span> литров!</span>
+            <span>📈 +1 л за спин</span>
+            <span>🎯 ШАНС — бесплатная доставка!</span>
+            <span class="jp-l">🏆 ДЖЕКПОТ: <span class="jp-v" id="jp2">0</span> л</span>
             <span>🎰 Крутите — выигрывайте!</span>
-            <span>📈 Каждый спин +1 л в джекпот</span>
-            <span>🎯 ШАНС — бесплатная доставка или брендированные призы!</span>
+            <span>📈 +1 л за спин</span>
+            <span>🎯 ШАНС — бесплатная доставка!</span>
         </div></div>
 
-        <div class="wheel-sec"><div class="wheel-wrap">
-            <div class="wheel-ring"></div>
-            <div class="pointer"><div class="pointer-glow"></div><div class="pointer-tri"></div></div>
-            <canvas id="wheelCanvas" width="600" height="600"></canvas>
-        </div></div>
+        <!-- КОЛЕСО -->
+        <div class="wheel-sec">
+            <div class="wheel-wrap">
+                <div class="wheel-outer-ring"></div>
+                <div class="pointer">
+                    <div class="ptr-dot"></div>
+                    <div class="ptr-arrow"></div>
+                </div>
+                <canvas id="wheelCanvas" width="600" height="600"></canvas>
+            </div>
+        </div>
 
+        <!-- ПРИЗ -->
         <div class="prize-box">
-            <div class="prize-lbl">Ваш выигрыш</div>
+            <div class="prize-lbl">ваш выигрыш</div>
             <div class="prize-val" id="prizeDisp">🎰 <small>Крутите!</small></div>
         </div>
 
+        <!-- КНОПКА (УМЕНЬШЕНА) -->
         <button class="spin-btn" id="spinBtn">
             🎰 КРУТИТЬ
             <span class="cost">1 $SINED</span>
         </button>
 
+        <!-- ЭКОСИСТЕМА -->
         <div class="eco">
             <div class="eco-t">🌐 Экосистема SINED</div>
             <div class="eco-i">💰 <b style="color:#00ffaa">$SINED</b> — внутренняя валюта</div>
             <div class="eco-i">🎰 <b style="color:#ffd700">Рулетка</b> — 1 $SINED за спин</div>
             <div class="eco-i">🏆 <b style="color:#ff006e">Джекпот</b> — копится с каждого вращения</div>
             <div class="eco-i">🎯 <b style="color:#ffd700">ШАНС</b> — бесплатная доставка / приз</div>
-            <div class="eco-i">🛢️ <b style="color:#00d4ff">Бонус</b> — до 10% списания от заказа</div>
-            <div class="eco-i">👥 <b style="color:#a29bfe">Рефералы</b> — +200 $SINED за друга</div>
+            <div class="eco-i">🛢️ <b style="color:#00d4ff">Бонус</b> — до 10% от заказа</div>
+            <div class="eco-i">👥 <b style="color:#a29bfe">Рефералы</b> — пригласи друга → +10 $SINED</div>
         </div>
+
+        <!-- РАЗРАБОТЧИКИ -->
+        <div class="dev-footer">
+            🛠 Разработка экосистемы:
+            <a href="https://ai-startup.pro" target="_blank">ai-startup.pro</a>
+            <br>
+            ⛽ Топливная компания
+            <a href="https://robit1984.github.io/sined-fuelopt-landing/" target="_blank">SINED</a>
+            — СПб и Лен. область
+        </div>
+
         <a href="https://robit1984.github.io/sined-fuelopt-landing/" class="back">← На главную</a>
     </div>
 </div>
 
-<!-- ====== ПАРТНЁРЫ ====== -->
+<!-- ПАРТНЁРЫ -->
 <div class="pbar"><div class="ptrack">
     <span class="pitem">🛒 Яндекс.Заправки <em>-15%</em></span>
     <span class="pitem">🛍️ OZON <em>-10%</em></span>
@@ -351,305 +420,284 @@
     <span class="pitem">🔧 FIT SERVICE <em>-12%</em></span>
 </div></div>
 
-<!-- ====== КОНФЕТТИ ====== -->
-<div class="confetti-layer" id="confettiLayer"></div>
+<!-- КОНФЕТТИ -->
+<div class="confetti-layer" id="confLayer"></div>
 
-<!-- ====== ЭКРАН ПОБЕДЫ ====== -->
-<div class="win-overlay" id="winOverlay">
-    <div class="win-text" id="winText"></div>
-    <div class="win-sub" id="winSub"></div>
-    <button class="win-close" id="winClose">Продолжить</button>
+<!-- ЭКРАН ПОБЕДЫ -->
+<div class="win-ov" id="winOv">
+    <img src="logo.png" class="win-ov-logo" onerror="this.style.display='none'">
+    <div class="win-t" id="winT"></div>
+    <div class="win-s" id="winS"></div>
+    <button class="win-c" id="winC">Продолжить</button>
 </div>
 
 <script>
-/*=============================================================
-   SINED ROULETTE v2
-   =============================================================*/
+/*===========================================================
+   SINED ROULETTE v3  —  ПОЛНАЯ ПЕРЕРАБОТКА
+   ===========================================================*/
 
-// =================== СЕКТОРЫ ===================
+// ============= СЕКТОРЫ (логика не тронута) =============
 const SECTORS = [
-    { label:'ДЖЕКПОТ', color:'#ff006e', prize:'jackpot' },
-    { label:'5 Л',     color:'#1b7a4b', prize:5 },
-    { label:'0 Л',     color:'#333',    prize:0 },
-    { label:'3 Л',     color:'#0066aa', prize:3 },
-    { label:'0 Л',     color:'#333',    prize:0 },
-    { label:'4 Л',     color:'#a07000', prize:4 },
-    { label:'0 Л',     color:'#333',    prize:0 },
-    { label:'2 Л',     color:'#4a1575', prize:2 },
-    { label:'0 Л',     color:'#333',    prize:0 },
-    { label:'1 Л',     color:'#aa5500', prize:1 },
-    { label:'ШАНС',    color:'#b8860b', prize:'chance' },
-    { label:'0 Л',     color:'#333',    prize:0 },
+    { label:'ДЖЕКПОТ', color:'#ff006e', prize:'jackpot', icon:'🏆' },
+    { label:'5 Л',     color:'#1a6b3f', prize:5,         icon:'🛢️' },
+    { label:'0 Л',     color:'#2a2a2a', prize:0,         icon:'' },
+    { label:'3 Л',     color:'#006699', prize:3,         icon:'🛢️' },
+    { label:'0 Л',     color:'#2a2a2a', prize:0,         icon:'' },
+    { label:'4 Л',     color:'#8a6d00', prize:4,         icon:'🛢️' },
+    { label:'0 Л',     color:'#2a2a2a', prize:0,         icon:'' },
+    { label:'2 Л',     color:'#3d1266', prize:2,         icon:'🛢️' },
+    { label:'0 Л',     color:'#2a2a2a', prize:0,         icon:'' },
+    { label:'1 Л',     color:'#8a4400', prize:1,         icon:'🛢️' },
+    { label:'ШАНС',    color:'#7a6800', prize:'chance',  icon:'🎯' },
+    { label:'0 Л',     color:'#2a2a2a', prize:0,         icon:'' },
 ];
+
 const N = SECTORS.length;
-const SA = 360 / N; // 30°
-const PTR = 270;    // указатель в canvas-координатах
+const SA = 360 / N;       // 30° на сектор
+const POINTER_DEG = 270;  // указатель сверху (canvas: 0°=право, 270°=верх)
 
-// =================== СОСТОЯНИЕ ===================
-let jackpot = 0;
-let spinning = false;
-let soundOn = true;
-let musicOn = false;
-let curRot = 0; // текущее вращение градусов
-let audioCtx = null;
+// ============= СОСТОЯНИЕ =============
+let jackpot = 0, spinning = false, sfxOn = true, musOn = false;
+let curRot = 0, audioCtx = null;
 
-// =================== DOM ===================
+// ============= DOM =============
 const cvs = document.getElementById('wheelCanvas');
-const c = cvs.getContext('2d');
+const ctx = cvs.getContext('2d');
 const prizeD = document.getElementById('prizeDisp');
 const spinB = document.getElementById('spinBtn');
-const jpD1 = document.getElementById('jp1');
-const jpD2 = document.getElementById('jp2');
-const confLayer = document.getElementById('confettiLayer');
-const winOvl = document.getElementById('winOverlay');
-const winTxt = document.getElementById('winText');
-const winSub = document.getElementById('winSub');
-const winCls = document.getElementById('winClose');
+const jp1 = document.getElementById('jp1');
+const jp2 = document.getElementById('jp2');
 
-// =================== HiDPI ===================
+// HiDPI
 const DPR = Math.min(window.devicePixelRatio || 1, 2);
-const VW = 600, VH = 600;
-cvs.width = VW * DPR; cvs.height = VH * DPR;
-c.scale(DPR, DPR);
+const CW = 600;
+cvs.width = CW * DPR; cvs.height = CW * DPR;
+ctx.scale(DPR, DPR);
 
-// =================== СТАРТ ПОЗИЦИЯ ===================
-// ШАНС (индекс 10) вверху = центр 330°. 330 + curRot ≡ 270 → curRot = 300
-curRot = 300;
-
-// =================== АУДИО ===================
-function initA(){
-    if(!audioCtx) try{ audioCtx=new(window.AudioContext||window.webkitAudioContext)() }catch(e){}
+// ============= АУДИО =============
+function initAudio(){
+    if(!audioCtx) try{ audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){}
 }
 
-function tone(freq,dur,type='sine',vol=.1){
-    if(!soundOn||!audioCtx)return;
+function tone(f,d,type='sine',vol=.1){
+    if(!sfxOn||!audioCtx)return;
     try{
         const o=audioCtx.createOscillator(),g=audioCtx.createGain();
         o.connect(g);g.connect(audioCtx.destination);
-        o.type=type;o.frequency.value=freq;
+        o.type=type;o.frequency.value=f;
         g.gain.setValueAtTime(vol,audioCtx.currentTime);
-        g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+dur);
-        o.start();o.stop(audioCtx.currentTime+dur);
+        g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+d);
+        o.start();o.stop(audioCtx.currentTime+d);
     }catch(e){}
 }
 
-function sfxClick(){tone(900,.06)}
-function sfxSpin(){for(let i=0;i<12;i++)setTimeout(()=>tone(120+Math.random()*200,.03,'square',.05),i*60)}
-function sfxWin(){[523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,.25,'sine',.12),i*90))}
-function sfxLose(){tone(130,.3,'sine',.08)}
-function sfxJackpot(){
-    [330,415,523,659,784,1047,1318].forEach((f,i)=>
-        setTimeout(()=>{tone(f,.4,'sine',.15);tone(f*1.5,.3,'triangle',.06)},i*100)
-    );
-}
-function sfxChance(){
-    [440,554,659,880].forEach((f,i)=>
-        setTimeout(()=>{tone(f,.35,'triangle',.12);tone(f*2,.25,'sine',.05)},i*120)
-    );
-}
+const sfxClick=()=>tone(900,.06);
+const sfxSpin=()=>{for(let i=0;i<10;i++)setTimeout(()=>tone(100+Math.random()*200,.03,'square',.04),i*70)};
+const sfxWin=()=>[523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,.22,'sine',.1),i*90));
+const sfxLose=()=>tone(120,.3,'sine',.06);
+const sfxJP=()=>[330,415,523,659,784,1047,1318].forEach((f,i)=>setTimeout(()=>{tone(f,.4,'sine',.14);tone(f*1.5,.3,'triangle',.05)},i*90));
+const sfxCh=()=>[440,554,659,880].forEach((f,i)=>setTimeout(()=>{tone(f,.3,'triangle',.1);tone(f*2,.2,'sine',.04)},i*110));
 
-// --- Фоновая музыка ---
-let musicInterval = null;
-const MELODY = [
-    // припев-подобный паттерн
-    {n:261.6,d:.25},{n:329.6,d:.25},{n:392,d:.25},{n:523.3,d:.5},
-    {n:493.9,d:.25},{n:392,d:.25},{n:349.2,d:.25},{n:329.6,d:.5},
-    {n:293.7,d:.25},{n:349.2,d:.25},{n:392,d:.25},{n:440,d:.5},
-    {n:392,d:.25},{n:329.6,d:.25},{n:261.6,d:.5},{n:0,d:.25},
-    // вторая часть
-    {n:349.2,d:.25},{n:392,d:.25},{n:440,d:.25},{n:523.3,d:.5},
-    {n:440,d:.25},{n:392,d:.25},{n:349.2,d:.25},{n:329.6,d:.5},
-    {n:293.7,d:.5},{n:261.6,d:.5},{n:0,d:.5},
+// --- Фоновая музыка (приятный ambient loop) ---
+let musLoop = null;
+const CHORDS = [
+    // Am        Em        F         C
+    [220,261.6,329.6], [164.8,246.9,329.6], [174.6,261.6,349.2], [130.8,196,261.6],
+    // Dm        Am        E         Am
+    [146.8,220,293.7], [220,261.6,329.6], [164.8,246.9,311.1], [220,261.6,329.6],
 ];
+const CHORD_DUR = 2.0; // секунд на аккорд
 
-function playMusic(){
-    if(!musicOn||!audioCtx)return;
-    let time = audioCtx.currentTime;
-    const vol = .04;
-    MELODY.forEach(note=>{
-        if(note.n>0){
-            // основная нота
+function playMusicLoop(){
+    if(!musOn||!audioCtx) return;
+    let t = audioCtx.currentTime + 0.05;
+    CHORDS.forEach(chord=>{
+        chord.forEach(freq=>{
+            // Pad: sine
             const o=audioCtx.createOscillator(),g=audioCtx.createGain();
             o.connect(g);g.connect(audioCtx.destination);
-            o.type='sine';o.frequency.value=note.n;
-            g.gain.setValueAtTime(0,time);
-            g.gain.linearRampToValueAtTime(vol,time+.03);
-            g.gain.setValueAtTime(vol,time+note.d-.05);
-            g.gain.linearRampToValueAtTime(0,time+note.d);
-            o.start(time);o.stop(time+note.d);
-            // обертона
+            o.type='sine';o.frequency.value=freq;
+            g.gain.setValueAtTime(0,t);
+            g.gain.linearRampToValueAtTime(.025,t+.3);
+            g.gain.setValueAtTime(.025,t+CHORD_DUR-.4);
+            g.gain.linearRampToValueAtTime(0,t+CHORD_DUR);
+            o.start(t);o.stop(t+CHORD_DUR);
+            // Triangle обертон
             const o2=audioCtx.createOscillator(),g2=audioCtx.createGain();
             o2.connect(g2);g2.connect(audioCtx.destination);
-            o2.type='triangle';o2.frequency.value=note.n*2;
-            g2.gain.setValueAtTime(0,time);
-            g2.gain.linearRampToValueAtTime(vol*.3,time+.03);
-            g2.gain.linearRampToValueAtTime(0,time+note.d);
-            o2.start(time);o2.stop(time+note.d);
-        }
-        time += note.d;
+            o2.type='triangle';o2.frequency.value=freq*2;
+            g2.gain.setValueAtTime(0,t);
+            g2.gain.linearRampToValueAtTime(.008,t+.3);
+            g2.gain.linearRampToValueAtTime(0,t+CHORD_DUR);
+            o2.start(t);o2.stop(t+CHORD_DUR);
+        });
+        t += CHORD_DUR;
     });
 }
 
-function startMusic(){
-    if(musicInterval)return;
-    initA();
-    const totalDur = MELODY.reduce((s,n)=>s+n.d,0)*1000;
-    playMusic();
-    musicInterval = setInterval(playMusic, totalDur);
+function startMus(){
+    if(musLoop) return;
+    initAudio();
+    playMusicLoop();
+    const total = CHORDS.length * CHORD_DUR * 1000;
+    musLoop = setInterval(playMusicLoop, total);
 }
-function stopMusic(){
-    if(musicInterval){clearInterval(musicInterval);musicInterval=null;}
+function stopMus(){if(musLoop){clearInterval(musLoop);musLoop=null}}
+
+function toggleMus(){
+    musOn=!musOn;
+    const b=document.getElementById('btnMus');
+    b.classList.toggle('off',!musOn);
+    if(musOn) startMus(); else stopMus();
 }
-function toggleMusic(){
-    musicOn=!musicOn;
-    document.getElementById('btnMusic').classList.toggle('muted',!musicOn);
-    if(musicOn)startMusic(); else stopMusic();
-}
-function toggleSound(){
-    soundOn=!soundOn;
-    document.getElementById('btnSound').textContent=soundOn?'🔊':'🔇';
+function toggleSfx(){
+    sfxOn=!sfxOn;
+    document.getElementById('btnSfx').textContent=sfxOn?'🔊':'🔇';
+    document.getElementById('btnSfx').classList.toggle('off',!sfxOn);
 }
 
-// =================== ОПРЕДЕЛИТЬ СЕКТОР ПОД УКАЗАТЕЛЕМ ===================
-function getSectorAtPointer(){
-    let nr = ((curRot % 360) + 360) % 360;
-    let pos = ((PTR - nr) % 360 + 360) % 360;
-    return SECTORS[Math.floor(pos / SA)];
-}
+// ============= РИСУЕМ КОЛЕСО =============
+function drawWheel(rot){
+    const cx=CW/2, cy=CW/2, R=CW/2-16; // <-- радиус МЕНЬШЕ canvas чтобы не вылезал
 
-// =================== РИСОВАТЬ КОЛЕСО ===================
-function drawWheel(rot, motionBlur){
-    const cx=VW/2, cy=VH/2, r=VW/2-12;
+    ctx.clearRect(0,0,CW,CW);
 
-    c.clearRect(0,0,VW,VH);
-
-    // Внешнее свечение
-    const glow = c.createRadialGradient(cx,cy,r-10,cx,cy,r+8);
+    // Свечение вокруг
+    const glow=ctx.createRadialGradient(cx,cy,R-5,cx,cy,R+10);
     glow.addColorStop(0,'rgba(0,212,255,0)');
-    glow.addColorStop(.5,'rgba(0,212,255,0.08)');
+    glow.addColorStop(.7,'rgba(0,212,255,.06)');
     glow.addColorStop(1,'rgba(0,212,255,0)');
-    c.beginPath();c.arc(cx,cy,r+8,0,Math.PI*2);
-    c.fillStyle=glow;c.fill();
+    ctx.beginPath();ctx.arc(cx,cy,R+10,0,Math.PI*2);ctx.fillStyle=glow;ctx.fill();
 
-    c.save();
-    c.translate(cx,cy);
-    c.rotate(rot * Math.PI/180);
+    ctx.save();
+    ctx.translate(cx,cy);
+    ctx.rotate(rot*Math.PI/180);
 
-    // Рисуем сегменты (с motion blur)
-    const passes = motionBlur ? 3 : 1;
-    for(let pass=0; pass<passes; pass++){
-        const passRot = motionBlur ? pass * 4 : 0; // сдвиг для размытия
-        c.save();
-        c.rotate(passRot * Math.PI/180);
-        c.globalAlpha = motionBlur ? (pass===0?.5:.25) : 1;
+    SECTORS.forEach((s,i)=>{
+        const a1=i*SA*Math.PI/180;
+        const a2=(i+1)*SA*Math.PI/180;
+        const mid=(i+.5)*SA*Math.PI/180;
 
-        SECTORS.forEach((s,i)=>{
-            const a1 = i*SA*Math.PI/180;
-            const a2 = (i+1)*SA*Math.PI/180;
+        // Сектор
+        ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,R,a1,a2);ctx.closePath();
 
-            // Сектор
-            c.beginPath();c.moveTo(0,0);c.arc(0,0,r,a1,a2);c.closePath();
-            c.fillStyle=s.color;c.fill();
+        // Градиент внутри сектора
+        const sg=ctx.createRadialGradient(0,0,R*.15,0,0,R);
+        sg.addColorStop(0,lighten(s.color,.15));
+        sg.addColorStop(1,s.color);
+        ctx.fillStyle=sg;
+        ctx.fill();
 
-            // Обводка
-            c.strokeStyle='rgba(0,0,0,0.5)';c.lineWidth=2.5;c.stroke();
-            c.strokeStyle='rgba(255,255,255,0.06)';c.lineWidth=1;c.stroke();
+        // Обводка
+        ctx.strokeStyle='rgba(0,0,0,.6)';ctx.lineWidth=2.5;ctx.stroke();
 
-            // Свечение для особых секторов
-            if(s.prize==='jackpot'){
-                c.save();c.beginPath();c.moveTo(0,0);c.arc(0,0,r,a1,a2);c.closePath();
-                c.clip();
-                c.shadowColor='#ff006e';c.shadowBlur=15;
-                c.strokeStyle='rgba(255,0,110,0.4)';c.lineWidth=3;c.stroke();
-                c.restore();
-            } else if(s.prize==='chance'){
-                c.save();c.beginPath();c.moveTo(0,0);c.arc(0,0,r,a1,a2);c.closePath();
-                c.clip();
-                c.shadowColor='#ffd700';c.shadowBlur=15;
-                c.strokeStyle='rgba(255,215,0,0.4)';c.lineWidth=3;c.stroke();
-                c.restore();
-            }
+        // Декор для особых
+        if(s.prize==='jackpot'||s.prize==='chance'){
+            ctx.save();ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,R,a1,a2);ctx.closePath();
+            ctx.clip();
+            const sc=s.prize==='jackpot'?'rgba(255,0,110,.3)':'rgba(255,215,0,.3)';
+            ctx.strokeStyle=sc;ctx.lineWidth=6;ctx.stroke();
+            ctx.restore();
+        }
 
-            // Текст
-            if(!motionBlur || pass===0){
-                c.save();
-                c.rotate((i+.5)*SA*Math.PI/180);
-                const fs = s.label.length > 5 ? 16 : 20;
-                c.font=`bold ${fs}px Arial`;
-                c.textAlign='right';c.textBaseline='middle';
-                // тень
-                c.fillStyle='rgba(0,0,0,0.6)';
-                c.fillText(s.label, r-30, 1);
-                // текст
-                c.fillStyle='#fff';
-                c.fillText(s.label, r-30, 0);
-                c.restore();
-            }
-        });
+        // --- ТЕКСТ (ВСЕГДА ЧИТАЕМЫЙ) ---
+        ctx.save();
+        ctx.rotate(mid);
 
-        c.globalAlpha=1;
-        c.restore();
-    }
+        // Определяем нужно ли переворачивать текст
+        const degMid = (i+.5)*SA;
+        const flip = degMid > 90 && degMid < 270;
 
-    c.restore();
+        if(flip){
+            // Переворачиваем для левой половины
+            ctx.rotate(Math.PI);
+            ctx.textAlign='left';
+            const textR = R-25;
 
-    // Внутреннее кольцо
-    const inn = c.createRadialGradient(cx,cy,0,cx,cy,r*.65);
-    inn.addColorStop(0,'rgba(0,0,0,0.15)');inn.addColorStop(1,'rgba(0,0,0,0)');
-    c.beginPath();c.arc(cx,cy,r*.65,0,Math.PI*2);c.fillStyle=inn;c.fill();
+            // тень
+            ctx.fillStyle='rgba(0,0,0,.6)';
+            ctx.font='bold 18px Arial';
+            ctx.textBaseline='middle';
+            ctx.fillText(s.label, -textR+10, 1);
+            // текст
+            ctx.fillStyle='#fff';
+            ctx.fillText(s.label, -textR+10, 0);
+        } else {
+            ctx.textAlign='right';
+            const textR = R-25;
 
-    // Центр
-    const cg = c.createRadialGradient(cx-5,cy-5,0,cx,cy,38);
-    cg.addColorStop(0,'#252540');cg.addColorStop(1,'#12121f');
-    c.beginPath();c.arc(cx,cy,36,0,Math.PI*2);
-    c.fillStyle=cg;c.fill();
-    c.strokeStyle='#00d4ff';c.lineWidth=3;c.stroke();
+            ctx.fillStyle='rgba(0,0,0,.6)';
+            ctx.font='bold 18px Arial';
+            ctx.textBaseline='middle';
+            ctx.fillText(s.label, textR, 1);
+            ctx.fillStyle='#fff';
+            ctx.fillText(s.label, textR, 0);
+        }
 
-    // Иконка
-    c.font='26px Arial';c.textAlign='center';c.textBaseline='middle';
-    c.fillStyle='#fff';c.fillText('🎰',cx,cy);
+        ctx.restore();
+    });
+
+    ctx.restore();
+
+    // Тёмное кольцо в центре
+    const cg=ctx.createRadialGradient(cx,cy,0,cx,cy,38);
+    cg.addColorStop(0,'#1e1e36');cg.addColorStop(1,'#0e0e1c');
+    ctx.beginPath();ctx.arc(cx,cy,36,0,Math.PI*2);
+    ctx.fillStyle=cg;ctx.fill();
+    ctx.strokeStyle='#00d4ff';ctx.lineWidth=3;ctx.stroke();
+
+    // Центральная иконка
+    ctx.font='22px Arial';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillStyle='#fff';ctx.fillText('⛽',cx,cy);
 }
 
-// =================== ВРАЩЕНИЕ ===================
-function spinWheel(){
-    if(spinning)return;
-    initA();sfxClick();
-    spinning=true;spinB.disabled=true;
+function lighten(hex,amt){
+    let r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+    r=Math.min(255,r+Math.round(255*amt));
+    g=Math.min(255,g+Math.round(255*amt));
+    b=Math.min(255,b+Math.round(255*amt));
+    return `rgb(${r},${g},${b})`;
+}
 
-    jackpot += 1; // +1 литр за спин (как было)
-    updateJP();
+// ============= ВРАЩЕНИЕ =============
+function spin(){
+    if(spinning) return;
+    initAudio(); sfxClick();
 
-    // Выбираем результат
-    let r=Math.random(), winIdx;
-    if(r<0.01){
+    spinning = true;
+    spinB.disabled = true;
+
+    jackpot += 1;
+    updJP();
+
+    // Выбор приза
+    let rnd = Math.random(), winIdx;
+    if(rnd < 0.01){
         // джекпот 1%
         const ji=SECTORS.map((s,i)=>s.prize==='jackpot'?i:-1).filter(i=>i>=0);
         winIdx=ji[Math.floor(Math.random()*ji.length)];
-    } else if(r<0.035){
+    } else if(rnd < 0.035){
         // шанс 2.5%
         const ci=SECTORS.map((s,i)=>s.prize==='chance'?i:-1).filter(i=>i>=0);
         winIdx=ci[Math.floor(Math.random()*ci.length)];
     } else {
         winIdx=Math.floor(Math.random()*N);
     }
-
     const win = SECTORS[winIdx];
 
-    // Математика центровки: центр сектора winIdx = (winIdx+.5)*SA
-    // Нужно: (winIdx+.5)*SA + targetRot ≡ PTR (mod 360)
-    const secCtr = (winIdx+.5)*SA;
-    let targetMod = ((PTR - secCtr)%360+360)%360;
-    // рандом ±внутри сектора
-    targetMod += (Math.random()-.5)*SA*.6;
-    targetMod = ((targetMod%360)+360)%360;
-
-    // текущая позиция
-    let curMod = ((curRot%360)+360)%360;
-    // дельта по часовой
+    // --- МАТЕМАТИКА ЦЕНТРОВКИ (ИСПРАВЛЕНА) ---
+    // Центр сектора в canvas-градусах (от 0°=право по часовой)
+    const secCenter = (winIdx + 0.5) * SA;
+    // Рандом ±40% внутри сектора
+    const wobble = (Math.random() - 0.5) * SA * 0.4;
+    // Целевой угол: нужно чтобы secCenter + rotation ≡ POINTER_DEG
+    // rotation ≡ POINTER_DEG - secCenter
+    let targetMod = ((POINTER_DEG - secCenter + wobble) % 360 + 360) % 360;
+    let curMod = ((curRot % 360) + 360) % 360;
     let delta = targetMod - curMod;
-    if(delta<0) delta += 360;
-    // полные обороты
-    const fullSpins = (5+Math.floor(Math.random()*3))*360;
+    if(delta < 0) delta += 360;
+
+    const fullSpins = (5 + Math.floor(Math.random() * 3)) * 360;
     const targetRot = curRot + fullSpins + delta;
 
     sfxSpin();
@@ -657,242 +705,242 @@ function spinWheel(){
     // Анимация
     const startR = curRot;
     const total = targetRot - startR;
-    const dur = 4500 + Math.random()*500; // 4.5-5 сек
+    const dur = 4500 + Math.random() * 500;
     const t0 = performance.now();
 
-    function ease(t){ return 1 - Math.pow(1-t, 3); }
+    function ease(t){ return 1 - Math.pow(1-t, 3.5); }
+
+    // Тиковый звук
+    let lastTickSector = -1;
+    function tickCheck(){
+        if(!sfxOn) return;
+        const nr = ((curRot % 360)+360)%360;
+        const pos = ((POINTER_DEG - nr) % 360 + 360) % 360;
+        const sec = Math.floor(pos / SA);
+        if(sec !== lastTickSector){
+            lastTickSector = sec;
+            tone(500+Math.random()*200, .03, 'square', .03);
+        }
+    }
 
     function tick(now){
         const el = now - t0;
         const p = Math.min(el/dur, 1);
-        const e = ease(p);
-        curRot = startR + total * e;
-
-        // motion blur когда быстро
-        const mb = p<.7 && p>.1;
-        drawWheel(curRot, mb);
+        curRot = startR + total * ease(p);
+        drawWheel(curRot);
+        tickCheck();
 
         if(p<1){
             requestAnimationFrame(tick);
         } else {
             curRot = targetRot;
-            drawWheel(curRot, false);
-            showResult(win, winIdx);
+            drawWheel(curRot);
+            showResult(win);
         }
     }
     requestAnimationFrame(tick);
 }
 
-// =================== РЕЗУЛЬТАТ ===================
-function showResult(win, idx){
+// ============= РЕЗУЛЬТАТ =============
+function showResult(win){
     prizeD.className='prize-val';
 
     if(win.prize==='jackpot'){
-        prizeD.innerHTML='🎉 ДЖЕКПОТ! <small>'+jackpot+' л!</small>';
-        prizeD.classList.add('pv-jackpot');
-        launchConfetti(250);
-        showWinScreen('🎉🏆🎉','ДЖЕКПОТ!','Вы выиграли '+jackpot+' литров топлива!','#ff006e');
-        sfxJackpot();
+        prizeD.innerHTML='🏆 ДЖЕКПОТ! <small>'+jackpot+' л</small>';
+        prizeD.classList.add('pv-jp');
+        launchConfetti(300);
+        showWin('🏆🎉🏆','ДЖЕКПОТ!','Вы выиграли '+jackpot+' литров топлива!','#ff006e');
+        sfxJP();
     } else if(win.prize==='chance'){
         prizeD.innerHTML='🎯 ШАНС! <small>Приз!</small>';
-        prizeD.classList.add('pv-chance');
-        launchConfetti(150);
-        showWinScreen('🎯✨🎯','ШАНС!','Бесплатная доставка или брендированный приз!','#ffd700');
-        sfxChance();
+        prizeD.classList.add('pv-ch');
+        launchConfetti(180);
+        showWin('🎯✨🎯','ШАНС!','Бесплатная доставка топлива или брендированный приз от SINED!','#ffd700');
+        sfxCh();
     } else if(win.prize===0){
         prizeD.innerHTML='0 <small>л</small>';
         prizeD.classList.add('pv-lose');
         sfxLose();
     } else {
         prizeD.innerHTML=win.prize+' <small>л</small>';
-        launchConfetti(40);
+        launchConfetti(50);
         sfxWin();
     }
 
     // Telegram
     try{
-        if(window.Telegram&&window.Telegram.WebApp){
+        if(window.Telegram?.WebApp){
             window.Telegram.WebApp.sendData(JSON.stringify({
                 action:'roulette_result',
-                prize: win.prize==='jackpot'?jackpot:win.prize==='chance'?'chance':win.prize,
-                isJackpot: win.prize==='jackpot',
-                isChance: win.prize==='chance'
+                prize:win.prize==='jackpot'?jackpot:win.prize==='chance'?'chance':win.prize,
+                isJackpot:win.prize==='jackpot',
+                isChance:win.prize==='chance'
             }));
         }
-    }catch(e){console.warn('TG:',e)}
+    }catch(e){}
 
     setTimeout(()=>{spinning=false;spinB.disabled=false},2000);
 }
 
-// =================== ЭКРАН ПОБЕДЫ ===================
-let winTimeout=null;
-function showWinScreen(emoji,text,sub,color){
-    winTxt.innerHTML=emoji+'<br>'+text;
-    winTxt.style.color=color;
-    winTxt.style.textShadow=`0 0 40px ${color},0 0 80px ${color}`;
-    winSub.textContent=sub;
-    winOvl.classList.add('active');
-    if(winTimeout)clearTimeout(winTimeout);
-    winTimeout=setTimeout(hideWinScreen,4000);
+// ============= ЭКРАН ПОБЕДЫ =============
+let winTO=null;
+function showWin(emoji,text,sub,color){
+    const t=document.getElementById('winT');
+    t.innerHTML=emoji+'<br>'+text;
+    t.style.color=color;
+    t.style.textShadow=`0 0 40px ${color},0 0 80px ${color}`;
+    document.getElementById('winS').textContent=sub;
+    document.getElementById('winOv').classList.add('active');
+    if(winTO) clearTimeout(winTO);
+    winTO = setTimeout(hideWin, 5000);
 }
-function hideWinScreen(){winOvl.classList.remove('active');}
-winCls.addEventListener('click',hideWinScreen);
+function hideWin(){document.getElementById('winOv').classList.remove('active')}
+document.getElementById('winC').addEventListener('click',hideWin);
 
-// =================== КОНФЕТТИ ===================
-const COLORS=['#ff006e','#00d4ff','#ffd700','#00ffaa','#a29bfe','#ff8c42','#fff','#ff4488'];
-
-function launchConfetti(count){
-    for(let i=0;i<count;i++){
+// ============= КОНФЕТТИ =============
+const CCOL=['#ff006e','#00d4ff','#ffd700','#00ffaa','#a29bfe','#ff8c42','#fff','#ff4488','#00cc88'];
+function launchConfetti(cnt){
+    const lay=document.getElementById('confLayer');
+    for(let i=0;i<cnt;i++){
         setTimeout(()=>{
             const el=document.createElement('div');
             el.className='confetti';
-            const w=4+Math.random()*8, h=8+Math.random()*16;
-            el.style.width=w+'px';el.style.height=h+'px';
-            el.style.backgroundColor=COLORS[Math.floor(Math.random()*COLORS.length)];
-            el.style.left=(10+Math.random()*80)+'%';
-            el.style.top='-20px';
-            const dur=2+Math.random()*3;
-            el.style.animationDuration=dur+'s';
-            el.style.animationDelay=(Math.random()*.5)+'s';
-            el.style.borderRadius=Math.random()>.5?'50%':'2px';
-            el.style.transform=`rotate(${Math.random()*360}deg)`;
-            confLayer.appendChild(el);
-            setTimeout(()=>el.remove(),(dur+1)*1000);
-        },i*15);
+            const w=3+Math.random()*7, h=6+Math.random()*14;
+            el.style.cssText=`width:${w}px;height:${h}px;background:${CCOL[Math.floor(Math.random()*CCOL.length)]};left:${5+Math.random()*90}%;top:-15px;animation-duration:${2+Math.random()*3}s;animation-delay:${Math.random()*.4}s;border-radius:${Math.random()>.5?'50%':'1px'};`;
+            lay.appendChild(el);
+            setTimeout(()=>el.remove(),5500);
+        },i*12);
     }
 }
 
-// =================== ДЖЕКПОТ ===================
-function updateJP(){jpD1.textContent=jackpot;jpD2.textContent=jackpot;}
+// ============= ДЖЕКПОТ =============
+function updJP(){jp1.textContent=jackpot;jp2.textContent=jackpot}
 
-// =================== ФОН: КАНАВАС ===================
-const bgCvs=document.getElementById('bgCanvas');
-const bg=bgCvs.getContext('2d');
-let bgW,bgH;
-
-function resizeBg(){
-    bgW=bgCvs.width=window.innerWidth;
-    bgH=bgCvs.height=window.innerHeight;
-}
+// ============= ФОН: ГРУЗОВИКИ + БОЧКИ =============
+const bgC=document.getElementById('bgCanvas');
+const bg=bgC.getContext('2d');
+let bW,bH;
+function resizeBg(){bW=bgC.width=window.innerWidth;bH=bgC.height=window.innerHeight}
 resizeBg();
 window.addEventListener('resize',resizeBg);
 
-// --- Грузовики ---
+// Грузовики
 const trucks=[];
-const TRUCK_COLORS=['#0088cc','#006644','#884400','#555'];
-for(let i=0;i<4;i++){
+for(let i=0;i<5;i++){
     trucks.push({
-        x: Math.random()*bgW,
-        speed: .3+Math.random()*.5,
-        scale: .5+Math.random()*.6,
-        color: TRUCK_COLORS[i],
-        barrels: 2+Math.floor(Math.random()*3)
+        x:Math.random()*bW, sp:.2+Math.random()*.4,
+        sc:.4+Math.random()*.5,
+        col:['#0077aa','#005533','#774400','#444','#003366'][i],
+        bc:2+Math.floor(Math.random()*3),
+        y: bH*.82 + Math.random()*bH*.06
+    });
+}
+
+// Плавающие бочки (декоративные)
+const barrels=[];
+for(let i=0;i<8;i++){
+    barrels.push({
+        x:Math.random()*bW, y:bH*.15+Math.random()*bH*.5,
+        sp:.1+Math.random()*.2, sz:8+Math.random()*12,
+        phase:Math.random()*Math.PI*2, drift:Math.random()*.3
+    });
+}
+
+// Звёзды
+const stars=[];
+for(let i=0;i<60;i++){
+    stars.push({
+        x:Math.random(),y:Math.random()*.5,
+        s:.3+Math.random()*1.2,
+        tw:Math.random()*Math.PI*2,
+        sp:.008+Math.random()*.015
     });
 }
 
 function drawTruck(x,y,s,col,bc){
-    bg.save();
-    bg.translate(x,y);bg.scale(s,s);
+    bg.save();bg.translate(x,y);bg.scale(s,s);
+
+    // Кабина
     bg.fillStyle=col;
-    // кабина
-    bg.beginPath();
-    bg.roundRect(0,-25,30,25,4);
-    bg.fill();
-    // окно
-    bg.fillStyle='rgba(150,220,255,0.4)';
-    bg.beginPath();bg.roundRect(4,-22,20,12,2);bg.fill();
-    // кузов
-    bg.fillStyle='#444';
-    bg.beginPath();bg.roundRect(32,-35,55,35,3);bg.fill();
-    // бочки
+    bg.beginPath();bg.roundRect(0,-22,28,22,3);bg.fill();
+    // Окно
+    bg.fillStyle='rgba(100,200,255,.3)';
+    bg.beginPath();bg.roundRect(3,-19,18,10,2);bg.fill();
+    // Кузов
+    bg.fillStyle='#3a3a3a';
+    bg.beginPath();bg.roundRect(30,-30,50,30,2);bg.fill();
+    // Бочки
     for(let j=0;j<bc;j++){
-        bg.fillStyle='#cc6600';
-        bg.beginPath();
-        bg.ellipse(40+j*18,-42,8,10,0,0,Math.PI*2);
-        bg.fill();
-        bg.strokeStyle='#994400';bg.lineWidth=1;bg.stroke();
-        // полосы
-        bg.strokeStyle='#dd8833';bg.lineWidth=.8;
-        bg.beginPath();bg.ellipse(40+j*18,-45,7,2,0,0,Math.PI*2);bg.stroke();
-        bg.beginPath();bg.ellipse(40+j*18,-39,7,2,0,0,Math.PI*2);bg.stroke();
+        bg.fillStyle='#bb5500';
+        bg.beginPath();bg.ellipse(38+j*16,-36,7,9,0,0,Math.PI*2);bg.fill();
+        bg.strokeStyle='#884400';bg.lineWidth=.8;bg.stroke();
         // S
-        bg.fillStyle='#fff';bg.font='bold 7px Arial';
-        bg.textAlign='center';bg.textBaseline='middle';
-        bg.fillText('S',40+j*18,-42);
+        bg.fillStyle='#fff';bg.font='bold 6px Arial';bg.textAlign='center';bg.textBaseline='middle';
+        bg.fillText('S',38+j*16,-36);
     }
-    // колёса
-    bg.fillStyle='#222';
-    bg.beginPath();bg.arc(12,2,6,0,Math.PI*2);bg.fill();
-    bg.beginPath();bg.arc(50,2,6,0,Math.PI*2);bg.fill();
-    bg.beginPath();bg.arc(75,2,6,0,Math.PI*2);bg.fill();
-    bg.fillStyle='#555';
-    bg.beginPath();bg.arc(12,2,3,0,Math.PI*2);bg.fill();
-    bg.beginPath();bg.arc(50,2,3,0,Math.PI*2);bg.fill();
-    bg.beginPath();bg.arc(75,2,3,0,Math.PI*2);bg.fill();
+    // Колёса
+    [[10,2],[45,2],[68,2]].forEach(([wx,wy])=>{
+        bg.fillStyle='#1a1a1a';bg.beginPath();bg.arc(wx,wy,5,0,Math.PI*2);bg.fill();
+        bg.fillStyle='#444';bg.beginPath();bg.arc(wx,wy,2.5,0,Math.PI*2);bg.fill();
+    });
+
     bg.restore();
 }
 
-// --- Звёзды ---
-const stars=[];
-for(let i=0;i<80;i++){
-    stars.push({
-        x:Math.random(),y:Math.random()*.45,
-        s:.5+Math.random()*1.5,
-        tw:Math.random()*Math.PI*2,
-        sp:.01+Math.random()*.02
-    });
+function drawBarrel(x,y,sz){
+    bg.save();bg.translate(x,y);
+    bg.fillStyle='rgba(180,100,0,.15)';
+    bg.beginPath();bg.ellipse(0,0,sz,sz*1.2,0,0,Math.PI*2);bg.fill();
+    bg.strokeStyle='rgba(180,100,0,.1)';bg.lineWidth=1;bg.stroke();
+    bg.fillStyle='rgba(255,255,255,.08)';bg.font=`bold ${sz*.6}px Arial`;bg.textAlign='center';bg.textBaseline='middle';
+    bg.fillText('S',0,0);
+    bg.restore();
 }
 
-function drawBg(){
-    // Градиент неба
-    const sky=bg.createLinearGradient(0,0,0,bgH);
-    sky.addColorStop(0,'#050510');
-    sky.addColorStop(.3,'#0a0a1a');
-    sky.addColorStop(.7,'#0f0f20');
-    sky.addColorStop(1,'#0a0a0f');
-    bg.fillStyle=sky;bg.fillRect(0,0,bgW,bgH);
+function bgLoop(){
+    // Небо
+    const sky=bg.createLinearGradient(0,0,0,bH);
+    sky.addColorStop(0,'#050510');sky.addColorStop(.4,'#0a0a1a');
+    sky.addColorStop(.8,'#0f0f1e');sky.addColorStop(1,'#08080f');
+    bg.fillStyle=sky;bg.fillRect(0,0,bW,bH);
 
     // Звёзды
     stars.forEach(s=>{
         s.tw+=s.sp;
-        const a=.3+Math.sin(s.tw)*.3;
-        bg.fillStyle=`rgba(200,220,255,${a})`;
-        bg.beginPath();bg.arc(s.x*bgW,s.y*bgH,s.s,0,Math.PI*2);bg.fill();
+        bg.fillStyle=`rgba(180,200,255,${.2+Math.sin(s.tw)*.2})`;
+        bg.beginPath();bg.arc(s.x*bW,s.y*bH,s.s,0,Math.PI*2);bg.fill();
     });
 
-    // Горизонт / земля
-    const ground=bg.createLinearGradient(0,bgH*.82,0,bgH);
-    ground.addColorStop(0,'#0a0a0f');
-    ground.addColorStop(1,'#111118');
-    bg.fillStyle=ground;
-    bg.fillRect(0,bgH*.82,bgW,bgH*.18);
+    // Плавающие бочки
+    barrels.forEach(b=>{
+        b.phase+=.008;
+        const bx=b.x+Math.sin(b.phase)*15;
+        const by=b.y+Math.cos(b.phase*.7)*8;
+        drawBarrel(bx,by,b.sz);
+        b.x+=b.drift;
+        if(b.x>bW+30)b.x=-30;
+    });
+
+    // Земля
+    bg.fillStyle='#0c0c14';bg.fillRect(0,bH*.8,bW,bH*.2);
 
     // Дорога
-    bg.fillStyle='#1a1a20';
-    bg.fillRect(0,bgH*.85,bgW,bgH*.15);
-    // разметка
-    bg.strokeStyle='rgba(255,255,255,0.08)';bg.lineWidth=2;bg.setLineDash([20,30]);
-    bg.beginPath();bg.moveTo(0,bgH*.92);bg.lineTo(bgW,bgH*.92);bg.stroke();
+    bg.fillStyle='#141418';bg.fillRect(0,bH*.83,bW,bH*.17);
+    bg.strokeStyle='rgba(255,255,255,.05)';bg.lineWidth=2;bg.setLineDash([18,25]);
+    bg.beginPath();bg.moveTo(0,bH*.9);bg.lineTo(bW,bH*.9);bg.stroke();
     bg.setLineDash([]);
 
     // Грузовики
     trucks.forEach(t=>{
-        t.x += t.speed;
-        if(t.x > bgW+120) t.x = -120;
-        drawTruck(t.x, bgH*.83, t.scale, t.color, t.barrels);
+        t.x+=t.sp;
+        if(t.x>bW+100) t.x=-100;
+        drawTruck(t.x,t.y,t.sc,t.col,t.bc);
     });
 
-    requestAnimationFrame(drawBg);
+    requestAnimationFrame(bgLoop);
 }
-drawBg();
 
-// =================== ИНИТ ===================
-drawWheel(curRot, false);
-updateJP();
-spinB.addEventListener('click', spinWheel);
-document.body.addEventListener('click', initA, {once:true});
-
-// Круглый rect polyfill
+// roundRect polyfill
 if(!CanvasRenderingContext2D.prototype.roundRect){
     CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){
         if(typeof r==='number')r=[r,r,r,r];
@@ -904,6 +952,50 @@ if(!CanvasRenderingContext2D.prototype.roundRect){
         this.closePath();return this;
     };
 }
+
+// ============= ИНИТ =============
+drawWheel(curRot);
+updJP();
+bgLoop();
+spinB.addEventListener('click', spin);
+document.body.addEventListener('click', initAudio, {once:true});
+
+// Обновляем позиции грузовиков и бочек при resize
+window.addEventListener('resize',()=>{
+    trucks.forEach(t=>t.y=bH*.82+Math.random()*bH*.06);
+});
 </script>
 </body>
 </html>
+```
+
+---
+
+## ✅ Что исправлено
+
+| # | Проблема | Решение |
+|---|----------|---------|
+| 1 | **Колесо вылезает за рамку** | Радиус уменьшен `R = CW/2 - 16`, wrapper = `280×280px` с `overflow:hidden` + `border-radius:50%` |
+| 2 | **Надписи перевёрнуты** | Добавлен `flip` — если сектор слева (90°–270°), текст разворачивается на 180° |
+| 3 | **Кнопка огромная** | `padding: 10px 20px`, `font-size: 15px`, `width: auto`, `min-width: 180px` |
+| 4 | **Музыка** | Новый ambient: аккорды Am→Em→F→C→Dm→Am→E→Am, зацикленные, с кнопкой 🎵 |
+| 5 | **Рефералы** | Изменено: **+10 $SINED** за друга |
+| 6 | **Логотип** | `<img src="logo.png">` наверху + в экране победы |
+| 7 | **ai-startup.pro** | Блок «Разработчики» со ссылкой |
+| 8 | **Тик-звук** | При прохождении секторов — щелчок |
+| 9 | **Бочки на фоне** | Плавающие бочки с буквой «S» |
+
+---
+
+## 📁 Что нужно сделать
+
+Положи файл **logo.png** (твой логотип СИНЕД) **в ту же папку** что и `roulette.html`:
+
+```
+sined-roulette/
+├── roulette.html  ← этот файл
+├── logo.png       ← твой логотип
+└── ...
+```
+
+Готов к следующей задаче — **бот** или **реферальная система**? 🚀
