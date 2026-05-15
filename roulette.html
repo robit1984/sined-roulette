@@ -2,7 +2,9 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no, maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>🎰 SINED — Рулетка</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
@@ -10,9 +12,15 @@
             width:100%;min-height:100vh;overflow-x:hidden;
             font-family:'Segoe UI',system-ui,sans-serif;
             color:#fff;
+            -webkit-touch-callout:none;
+            -webkit-user-select:none;
+            user-select:none;
+            -webkit-font-smoothing:antialiased;
+            -webkit-text-size-adjust:100%;
         }
         body{
             background:linear-gradient(170deg,#0d1b2a 0%,#1b2838 30%,#1a2540 60%,#162035 100%);
+            background-attachment:fixed;
         }
 
         /* ====== ПАДАЮЩИЕ БОЧКИ ====== */
@@ -54,17 +62,19 @@
         .wrap{
             position:relative;z-index:5;
             display:flex;flex-direction:column;align-items:center;
-            padding:10px 36px 75px;min-height:100vh;
+            padding:10px 16px 75px;min-height:100vh;
+            flex-shrink:0;
+            width:100%;
         }
 
         /* ====== ЛОГОТИП ====== */
         .logo-area{
             text-align:center;margin-bottom:4px;padding-top:6px;
             position:relative;
+            flex-shrink:0;
         }
         .logo-area img{
             width:56px;height:56px;object-fit:contain;
-            /* Красный неоновый эффект */
             filter:drop-shadow(0 0 10px rgba(255,80,80,0.6)) drop-shadow(0 0 20px rgba(255,80,80,0.3));
             background:transparent;
         }
@@ -87,6 +97,7 @@
             padding:12px 10px;
             box-shadow:0 0 40px rgba(255,80,80,.06);
             text-align:center;
+            flex-shrink:0;
         }
 
         /* ====== ДЖЕКПОТ БАР ====== */
@@ -103,50 +114,162 @@
         @keyframes jpS{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 
         /* ==================================================
-           КОЛЕСО — ЖЁСТКАЯ ЦЕНТРОВКА + FLEXBOX
+           АДАПТИВНОЕ КОЛЕСО — СТАБИЛЬНАЯ ЦЕНТРОВКА iOS
            ================================================== */
+        
+        /* МОБИЛЬНЫЕ ДЕВАЙСЫ < 360px */
+        @media screen and (max-width:359px){
+            .wrap{padding:8px 8px 65px}
+            .wheel-box{
+                width:240px;height:240px;
+                margin:4px auto 6px;
+                flex-shrink:0;
+                position:relative;
+                display:flex;
+                justify-content:center;
+                align-items:center;
+            }
+            .card{padding:10px 8px}
+            .prize-v{font-size:28px}
+            .sbtn{font-size:12px;padding:7px 12px;min-width:140px}
+        }
+
+        /* МОБИЛЬНЫЕ 360px - 389px (iPhone SE, iPhone 12 mini) */
+        @media screen and (min-width:360px) and (max-width:389px){
+            .wrap{padding:9px 12px 68px}
+            .wheel-box{
+                width:260px;height:260px;
+                margin:5px auto 7px;
+                flex-shrink:0;
+                position:relative;
+                display:flex;
+                justify-content:center;
+                align-items:center;
+            }
+            .card{padding:11px 9px}
+            .prize-v{font-size:30px}
+            .sbtn{font-size:13px;padding:8px 14px;min-width:150px}
+        }
+
+        /* МОБИЛЬНЫЕ 390px - 419px (iPhone 11, 12) */
+        @media screen and (min-width:390px) and (max-width:419px){
+            .wrap{padding:10px 14px 70px}
+            .wheel-box{
+                width:280px;height:280px;
+                margin:6px auto 8px;
+                flex-shrink:0;
+                position:relative;
+                display:flex;
+                justify-content:center;
+                align-items:center;
+            }
+            .card{padding:12px 10px}
+            .prize-v{font-size:32px}
+            .sbtn{font-size:14px;padding:9px 16px;min-width:160px}
+        }
+
+        /* МОБИЛЬНЫЕ 420px - 479px (iPhone 13, 14, most Android) */
+        @media screen and (min-width:420px) and (max-width:479px){
+            .wrap{padding:12px 16px 75px}
+            .wheel-box{
+                width:300px;height:300px;
+                margin:7px auto 10px;
+                flex-shrink:0;
+                position:relative;
+                display:flex;
+                justify-content:center;
+                align-items:center;
+            }
+            .card{padding:13px 11px}
+            .prize-v{font-size:34px}
+            .sbtn{font-size:14px;padding:9px 16px;min-width:170px}
+        }
+
+        /* ПЛАНШЕТЫ И ПЕЙБЛ >= 480px */
+        @media screen and (min-width:480px){
+            .wrap{padding:14px 20px 80px;max-width:100%;margin:0 auto}
+            .wheel-box{
+                width:320px;height:320px;
+                margin:8px auto 12px;
+                flex-shrink:0;
+                position:relative;
+                display:flex;
+                justify-content:center;
+                align-items:center;
+            }
+            .card{padding:14px 12px;max-width:360px}
+            .prize-v{font-size:36px}
+            .sbtn{font-size:15px;padding:10px 18px;min-width:180px}
+        }
+
+        /* iOS ФИКСЫ */
+        @supports (-webkit-touch-callout:none){
+            .wrap{padding-bottom:calc(75px + env(safe-area-inset-bottom))}
+            .wheel-box{
+                -webkit-transform:translate(0,0);
+                transform:translate(0,0);
+                -webkit-backface-visibility:hidden;
+                backface-visibility:hidden;
+            }
+            .wheel-clip{
+                -webkit-mask-image:-webkit-radial-gradient(white,black);
+            }
+        }
+
+        /* ЛАНДШАФТНАЯ ОРИЕНТАЦИЯ */
+        @media screen and (orientation:landscape){
+            .wrap{padding-top:8px;padding-bottom:60px}
+            .logo-area{margin-bottom:2px}
+            .logo-name{font-size:18px;letter-spacing:6px}
+            .logo-desc{font-size:7px}
+            .card{padding:8px 8px}
+            .jp-t{font-size:9px}
+            .jp-t span{margin:0 8px}
+        }
+        @media screen and (orientation:landscape) and (max-height:500px){
+            .wheel-box{margin:2px auto 4px}
+            .prize-v{font-size:24px}
+            .sbtn{font-size:12px;padding:6px 12px;min-width:130px}
+        }
+
+        /* ====== КОЛЕСО — СТАБИЛЬНАЯ СТРУКТУРА ====== */
         .wheel-box{
-            position:relative;
-            /* ЖЁСТКИЙ КВАДРАТ */
-            width:260px;
-            height:260px;
             margin:6px auto 8px;
-            /* FLEXBOX ЦЕНТРОВКА */
+            flex-shrink:0;
+            position:relative;
             display:flex;
             justify-content:center;
             align-items:center;
         }
-        @media(min-width:390px){
-            .wheel-box{width:280px;height:280px}
-        }
-        @media(min-width:420px){
-            .wheel-box{width:300px;height:300px}
-        }
 
         .wheel-clip{
-            /* Жёсткий круг = обрезка */
             position:absolute;
             inset:0;
             border-radius:50%;
             overflow:hidden;
+            flex-shrink:0;
         }
+
         #wCanvas{
-            /* Canvas РОВНО по размеру */
             display:block;
             width:100%;
             height:100%;
+            -webkit-user-select:none;
+            user-select:none;
+            -webkit-touch-callout:none;
         }
+
         .wheel-border{
             position:absolute;
             inset:-3px;
             border-radius:50%;
-            /* Красное свечение */
             border:3px solid rgba(255,80,80,0.4);
             box-shadow:
                 0 0 20px rgba(255,80,80,0.3),
                 inset 0 0 15px rgba(255,80,80,0.1);
             pointer-events:none;
             z-index:1;
+            flex-shrink:0;
         }
 
         /* Указатель */
@@ -154,6 +277,7 @@
             position:absolute;
             top:-4px;left:50%;transform:translateX(-50%);
             z-index:20;text-align:center;
+            flex-shrink:0;
         }
         .ptr-d{
             width:8px;height:8px;background:#ffd700;border-radius:50%;
@@ -178,6 +302,7 @@
             filter:drop-shadow(0 0 8px rgba(255,80,80,0.5));
             border-radius:50%;
             pointer-events:none;
+            flex-shrink:0;
         }
 
         /* ====== ПРИЗ ====== */
@@ -188,7 +313,7 @@
         }
         .prize-l{color:#7a6a6a;font-size:9px;letter-spacing:2px;text-transform:uppercase}
         .prize-v{
-            font-size:32px;font-weight:800;color:#00ffaa;
+            font-weight:800;color:#00ffaa;
             text-shadow:0 0 15px rgba(0,255,170,.3);transition:color .3s;
         }
         .prize-v small{font-size:13px;color:#ff8866;font-weight:500}
@@ -200,11 +325,13 @@
         .sbtn{
             background:linear-gradient(145deg,#ff5544,#cc3322);
             border:1px solid rgba(255,255,255,.08);
-            color:#fff;font-size:14px;font-weight:700;
-            padding:9px 16px;border-radius:30px;
-            min-width:160px;cursor:pointer;letter-spacing:2px;
+            color:#fff;font-weight:700;
+            border-radius:30px;
+            cursor:pointer;letter-spacing:2px;
             box-shadow:0 2px 15px rgba(255,80,80,.25);
             transition:all .2s;
+            -webkit-appearance:none;
+            appearance:none;
         }
         .sbtn:hover{box-shadow:0 2px 25px rgba(255,80,80,.35)}
         .sbtn:active{transform:scale(.97)}
@@ -258,6 +385,7 @@
             margin-top:16px;padding:7px 20px;
             background:rgba(255,80,80,.15);border:1px solid rgba(255,80,80,.2);
             border-radius:16px;color:#fff;font-size:12px;cursor:pointer;
+            -webkit-appearance:none;appearance:none;
         }
         @keyframes wp{0%{transform:scale(1)}100%{transform:scale(1.03)}}
 
@@ -365,6 +493,7 @@
             background:rgba(0,0,0,.4);border:1px solid rgba(255,80,80,.15);
             border-radius:50%;font-size:12px;cursor:pointer;
             display:flex;align-items:center;justify-content:center;color:#fff;
+            -webkit-appearance:none;appearance:none;
         }
         .cb.off{opacity:.35}
     </style>
@@ -504,7 +633,7 @@
 
 <script>
 /*===========================================================
-   SINED ROULETTE v4 FINAL
+   SINED ROULETTE v4 FINAL — iOS + All Devices Optimized
    ===========================================================*/
 
 const SEC=[
@@ -574,7 +703,7 @@ const sTruck=()=>{
     }catch(e){}
 };
 
-// --- Музыка: простая мелодия (без повторного запуска) ---
+// --- Музыка ---
 let mI=null;
 const ML=[
     {n:261.6,d:.4},{n:329.6,d:.4},{n:392,d:.4},{n:440,d:.6},
@@ -596,7 +725,6 @@ function playM(){
             g.gain.setValueAtTime(.02,t+n.d-.08);
             g.gain.linearRampToValueAtTime(0,t+n.d);
             o.start(t);o.stop(t+n.d);
-            // обертон
             const o2=aC.createOscillator(),g2=aC.createGain();
             o2.connect(g2);g2.connect(aC.destination);
             o2.type='triangle';o2.frequency.value=n.n*2;
@@ -610,7 +738,7 @@ function playM(){
 }
 
 function startM(){
-    if(mI)return; // не запускать дважды
+    if(mI)return;
     iA();playM();
     const d=ML.reduce((s,n)=>s+n.d,0)*1000;
     mI=setInterval(playM,d);
@@ -651,7 +779,7 @@ function drawW(r){
             ctx.lineWidth=5;ctx.stroke();ctx.restore();
         }
 
-        // Текст — читаемый на обеих сторонах
+        // Текст
         ctx.save();
         ctx.rotate(mid*Math.PI/180);
         const flip=mid>90&&mid<270;
@@ -673,7 +801,6 @@ function drawW(r){
 
     ctx.restore();
 
-    // Центральный круг (прозрачный — лого поверх через HTML)
     const cg=ctx.createRadialGradient(cx,cy,0,cx,cy,26);
     cg.addColorStop(0,'rgba(20,25,40,.9)');cg.addColorStop(1,'rgba(10,15,25,.9)');
     ctx.beginPath();ctx.arc(cx,cy,24,0,Math.PI*2);
@@ -705,7 +832,6 @@ function doSpin(){
     }
     const w=SEC[wi];
 
-    // Центровка
     const sc=(wi+.5)*SA;
     const wb=(Math.random()-.5)*SA*.4;
     let tm=((PTR-sc+wb)%360+360)%360;
@@ -788,10 +914,7 @@ function startChanceGame(){
     truck.style.opacity='1';
     truckPos=10;truckDir=1;
 
-    // Звук самосвала
     sTruck();
-
-    // Мелодия шанса
     if(sfx)[440,554,659,880,1047].forEach((f,i)=>setTimeout(()=>tn(f,.3,'triangle',.1),i*100));
 
     vibrate([100]);
@@ -846,7 +969,6 @@ function burstTruck(){
 
     const tx=truckPos+30,ty=area.offsetHeight-60;
 
-    // Бочки
     for(let i=0;i<12;i++){
         const b=document.createElement('div');b.className='barrel-pop';b.textContent='🛢️';
         b.style.left=tx+'px';b.style.top=ty+'px';
@@ -856,7 +978,6 @@ function burstTruck(){
         area.appendChild(b);setTimeout(()=>b.remove(),1200);
     }
 
-    // Нефть
     for(let i=0;i<20;i++){
         const o=document.createElement('div');o.className='oil-splash';
         o.style.left=tx+'px';o.style.top=ty+'px';
@@ -886,7 +1007,7 @@ function confetti(n){
         setTimeout(()=>{
             const e=document.createElement('div');e.className='conf';
             const w=3+Math.random()*6,h=5+Math.random()*12;
-            e.style.cssText=`width:${w}px;height:${h}px;background:${CC[Math.floor(Math.random()*CC.length)]};left:${5+Math.random()*90}%;top:-12px;animation-duration:${2+Math.random()*2.5}s;border-radius:${Math.random()>.5?'50%':'1px'}`;
+            e.style.cssText=`width:${w}px;height:${h}px;background:${CC[Math.floor(Math.random()*CC.length)]};left:${5+Math.random()*90}%;top:-12px;animation-duration:${2+Math.random()*2.5}s;border-radius:${Math.random()>.5?'50%':'2px'};transform:rotate(${Math.random()*360}deg)`;
             l.appendChild(e);setTimeout(()=>e.remove(),5000);
         },i*10);
     }
