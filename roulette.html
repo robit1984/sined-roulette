@@ -2,963 +2,536 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>🎰 SINED — Рулетка</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <title>🎰 РУЛЕТКА SINED</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        *{margin:0;padding:0;box-sizing:border-box}
-        body{
-            min-height:100vh;
-            background:#07070e;
-            font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
-            overflow-x:hidden;
-            color:#fff;
+        * { margin:0; padding:0; box-sizing:border-box; font-family: 'Inter', sans-serif; user-select: none; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            min-height: 100dvh; 
+            background: linear-gradient(180deg, #e0f2fe 0%, #f0f9ff 100%); /* Светлый приятный фон */
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 20px 10px; 
+            position: relative; 
+            overflow: hidden;
+            color: #1e293b;
         }
 
-        /* ====== ФОН ====== */
-        .bg-scene{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-        .bg-canvas{width:100%;height:100%;display:block}
+        /* Падающие бочки (снег) */
+        .falling-barrels { position: absolute; top:0; left:0; width:100%; height:100%; z-index: 1; pointer-events: none; overflow: hidden; }
+        .falling-barrel { position: absolute; top: -50px; font-size: 24px; animation: fall linear infinite; opacity: 0.6; }
+        @keyframes fall { 0% { transform: translateY(-50px) rotate(0deg); } 100% { transform: translateY(110vh) rotate(360deg); } }
 
-        /* ====== БОКОВЫЕ ЛЕНТОЧКИ ====== */
-        .ribbon{
-            position:fixed;z-index:2;
-            overflow:hidden;
-            white-space:nowrap;
-            pointer-events:none;
-        }
-        .ribbon-left{
-            top:0;left:0;width:32px;height:100vh;
-            background:linear-gradient(180deg,rgba(0,212,255,0.06),rgba(0,212,255,0.02));
-            border-right:1px solid rgba(0,212,255,0.12);
-            writing-mode:vertical-rl;
-            text-orientation:mixed;
-            display:flex;align-items:center;justify-content:center;
-            overflow:hidden;
-        }
-        .ribbon-right{
-            top:0;right:0;width:32px;height:100vh;
-            background:linear-gradient(180deg,rgba(0,212,255,0.06),rgba(0,212,255,0.02));
-            border-left:1px solid rgba(0,212,255,0.12);
-            writing-mode:vertical-lr;
-            text-orientation:mixed;
-            display:flex;align-items:center;justify-content:center;
-            overflow:hidden;
-        }
-        .ribbon-inner{
-            display:inline-block;
-            animation:ribbonV 18s linear infinite;
-            font-size:11px;letter-spacing:3px;color:rgba(0,212,255,0.5);
-            font-weight:500;
-        }
-        .ribbon-inner span{display:block;padding:15px 0}
-        @keyframes ribbonV{0%{transform:translateY(0)}100%{transform:translateY(-50%)}}
-
-        /* ====== ОБЁРТКА ====== */
-        .wrapper{
-            position:relative;z-index:5;
-            display:flex;flex-direction:column;align-items:center;
-            min-height:100vh;
-            padding:12px 40px 80px;
+        /* Главная карточка - Светлая тема */
+        .game-card { 
+            position: relative; 
+            z-index: 10; 
+            max-width: 400px; 
+            width: 100%; 
+            background: rgba(255, 255, 255, 0.95); 
+            backdrop-filter: blur(10px); 
+            border: 1px solid #cbd5e1; 
+            border-radius: 24px; 
+            padding: 20px; 
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1); 
+            text-align: center;
+            overflow: hidden; /* Важно для центровки */
         }
 
-        /* ====== ЛОГОТИП ====== */
-        .logo-block{
-            text-align:center;
-            margin-bottom:6px;
-            padding-top:8px;
+        /* Логотип */
+        .logo-header { margin-bottom: 15px; display: flex; flex-direction: column; align-items: center; }
+        .logo-img { width: 60px; height: 60px; object-fit: contain; margin-bottom: 5px; }
+        .brand-logo { font-size: 24px; font-weight: 800; color: #0f172a; letter-spacing: 2px; }
+        .brand-sub { font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+        /* Джекпот бар */
+        .jackpot-bar { background: #fff1f2; border: 1px solid #fda4af; border-radius: 12px; padding: 8px; margin-bottom: 15px; overflow: hidden; white-space: nowrap; }
+        .jackpot-track { display: inline-block; animation: scrollText 10s linear infinite; }
+        .jackpot-track span { margin: 0 15px; color: #64748b; font-size: 12px; font-weight: 600; }
+        .jackpot-track .label { color: #e11d48; font-weight: 800; }
+        .jackpot-track .val { color: #d97706; font-weight: 800; font-size: 14px; }
+        @keyframes scrollText { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* Колесо - Строгая центровка */
+        .wheel-container { 
+            position: relative; 
+            width: 280px; 
+            height: 280px; 
+            margin: 0 auto 15px auto; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-        .logo-img{
-            width:72px;height:72px;
-            object-fit:contain;
-            filter:drop-shadow(0 0 15px rgba(0,140,255,0.4));
-            margin-bottom:2px;
+        .wheel-wrapper { 
+            position: relative; 
+            width: 100%; 
+            height: 100%; 
+            border-radius: 50%;
+            box-shadow: 0 0 0 8px #ffffff, 0 0 0 10px #cbd5e1, 0 10px 20px rgba(0,0,0,0.1); /* Белая рамка вокруг */
+            background: #fff;
+            overflow: hidden;
         }
-        .logo-text{
-            font-size:28px;font-weight:900;letter-spacing:10px;
-            background:linear-gradient(135deg,#0088cc 0%,#00cc88 50%,#00d4ff 100%);
-            -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-            background-clip:text;
-            filter:drop-shadow(0 0 15px rgba(0,180,255,0.3));
-            line-height:1;
-        }
-        .logo-sub{
-            font-size:9px;color:#445;letter-spacing:3px;
-            text-transform:uppercase;margin-top:2px;
+        #wheelCanvas { width: 100%; height: 100%; display: block; }
+        
+        .pointer { 
+            position: absolute; 
+            top: -5px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            width: 0; height: 0; 
+            border-left: 15px solid transparent; 
+            border-right: 15px solid transparent; 
+            border-top: 25px solid #f59e0b; 
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); 
+            z-index: 20; 
         }
 
-        /* ====== КАРТОЧКА ====== */
-        .game-card{
-            width:100%;max-width:380px;
-            background:rgba(10,10,18,0.92);
-            backdrop-filter:blur(20px);
-            border:1px solid rgba(0,212,255,0.18);
-            border-radius:24px;
-            padding:14px 12px 14px;
-            box-shadow:0 0 50px rgba(0,212,255,0.1);
-            text-align:center;
-        }
+        /* Табло */
+        .prize-panel { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 10px; margin: 15px 0; }
+        .prize-label { color: #64748b; font-size: 11px; font-weight: 700; letter-spacing: 1px; margin-bottom: 5px; }
+        .prize-value { color: #0f172a; font-size: 32px; font-weight: 800; }
+        .prize-value small { font-size: 16px; color: #64748b; }
 
-        /* ====== ДЖЕКПОТ БАР ====== */
-        .jp-bar{
-            background:linear-gradient(135deg,rgba(255,0,110,0.05),rgba(255,140,66,0.05));
-            border:1px solid rgba(255,0,110,0.2);
-            border-radius:10px;padding:7px 0;margin-bottom:10px;
-            overflow:hidden;white-space:nowrap;
+        /* Кнопка */
+        .spin-btn { 
+            background: #0f172a; 
+            color: #fff; 
+            border: none; 
+            padding: 12px 30px; 
+            border-radius: 30px; 
+            font-size: 16px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+            transition: transform 0.1s;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
         }
-        .jp-track{display:inline-block;animation:jpScroll 16s linear infinite;font-size:12px}
-        .jp-track span{margin:0 18px;color:#555}
-        .jp-l{color:#ff006e;font-weight:700}
-        .jp-v{color:#ffd700;font-weight:800}
-        @keyframes jpScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+        .spin-btn:active { transform: scale(0.95); }
+        .spin-btn .cost { font-size: 11px; opacity: 0.7; font-weight: 400; margin-top: 2px; }
+        .spin-btn:disabled { background: #cbd5e1; color: #64748b; box-shadow: none; }
 
-        /* ====== КОЛЕСО — ИСПРАВЛЕНА ЦЕНТРОВКА ====== */
-        .wheel-sec{position:relative;margin:0 auto 8px}
-        .wheel-wrap{
-            position:relative;
-            /* Фиксированный размер чтобы колесо НЕ вылезало */
-            width:280px;height:280px;
-            margin:0 auto;
-            overflow:hidden;
-            border-radius:50%;
-        }
-        @media(min-width:400px){
-            .wheel-wrap{width:310px;height:310px}
-        }
-        #wheelCanvas{
-            /* Canvas ТОЧНО по размеру контейнера */
-            width:100%!important;
-            height:100%!important;
-            display:block;
-            border-radius:50%;
-            box-shadow:
-                0 0 30px rgba(0,212,255,0.3),
-                0 0 60px rgba(0,212,255,0.08),
-                inset 0 0 25px rgba(0,0,0,0.5);
-        }
-        .wheel-outer-ring{
-            position:absolute;inset:-4px;
-            border-radius:50%;
-            border:2px solid rgba(0,212,255,0.2);
-            box-shadow:0 0 10px rgba(0,212,255,0.12);
-            pointer-events:none;
-        }
-        .pointer{
-            position:absolute;
-            top:-2px;left:50%;
-            transform:translateX(-50%);
-            z-index:20;text-align:center;
-        }
-        .ptr-dot{
-            width:10px;height:10px;
-            background:#ffd700;border-radius:50%;
-            margin:0 auto 1px;
-            box-shadow:0 0 10px rgba(255,215,0,0.6),0 0 20px rgba(255,215,0,0.2);
-        }
-        .ptr-arrow{
-            width:0;height:0;
-            border-left:10px solid transparent;
-            border-right:10px solid transparent;
-            border-top:24px solid #ffd700;
-            filter:drop-shadow(0 2px 4px rgba(255,215,0,0.4));
-        }
+        /* Инфо */
+        .ecosystem { text-align: left; margin-top: 15px; padding: 12px; background: #f1f5f9; border-radius: 12px; font-size: 11px; color: #475569; line-height: 1.5; }
+        .ecosystem .ttl { font-weight: 800; color: #0f172a; margin-bottom: 5px; }
+        
+        .dev-credit { margin-top: 10px; font-size: 10px; color: #94a3b8; }
+        .dev-credit a { color: #3b82f6; text-decoration: none; }
 
-        /* ====== ПРИЗ ====== */
-        .prize-box{
-            background:rgba(0,0,0,0.3);
-            border:1px solid rgba(0,212,255,0.15);
-            border-radius:12px;padding:8px;margin:8px 0 10px;
-        }
-        .prize-lbl{color:#556;font-size:10px;letter-spacing:3px;text-transform:uppercase}
-        .prize-val{
-            font-size:36px;font-weight:800;color:#00ffaa;
-            text-shadow:0 0 18px rgba(0,255,170,0.3);
-            transition:color .3s;
-        }
-        .prize-val small{font-size:14px;color:#00d4ff;font-weight:500}
-        .prize-val.pv-jp{color:#ff006e;text-shadow:0 0 25px rgba(255,0,110,0.5)}
-        .prize-val.pv-ch{color:#ffd700;text-shadow:0 0 25px rgba(255,215,0,0.5)}
-        .prize-val.pv-lose{color:#ff4455;text-shadow:0 0 12px rgba(255,68,85,0.3)}
+        /* Кнопки управления */
+        .controls { position: absolute; top: 10px; right: 10px; display: flex; gap: 8px; z-index: 50; }
+        .ctrl-btn { width: 32px; height: 32px; border-radius: 50%; background: #fff; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
-        /* ====== КНОПКА — УМЕНЬШЕНА ====== */
-        .spin-btn{
-            background:linear-gradient(145deg,#00d4ff,#0066aa);
-            border:1px solid rgba(255,255,255,0.1);
-            color:#0a0a0f;
-            font-size:15px;
-            font-weight:700;
-            padding:10px 20px;
-            border-radius:40px;
-            width:auto;
-            min-width:180px;
-            cursor:pointer;letter-spacing:2px;
-            box-shadow:0 3px 15px rgba(0,212,255,0.25);
-            transition:all .2s;position:relative;overflow:hidden;
+        /* === МИНИ-ИГРА "ШАНС" === */
+        #chanceOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 1000;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
         }
-        .spin-btn::after{
-            content:'';position:absolute;inset:0;
-            background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);
-            transform:translateX(-100%);
-            animation:btnShine 4s ease-in-out infinite;
+        .truck-game-area { position: relative; width: 300px; height: 400px; background: #334155; border-radius: 20px; overflow: hidden; border: 4px solid #fff; }
+        .road { position: absolute; bottom: 0; width: 100%; height: 100%; background: #475569; }
+        .road-lines { position: absolute; top: 50%; width: 100%; height: 10px; background: repeating-linear-gradient(90deg, #fff 0, #fff 40px, transparent 40px, transparent 80px); animation: roadMove 0.5s linear infinite; }
+        @keyframes roadMove { from { transform: translateX(0); } to { transform: translateX(-80px); } }
+        
+        .truck-target {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 80px; cursor: pointer; transition: transform 0.1s;
+            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.5));
+            z-index: 10;
         }
-        @keyframes btnShine{0%,75%,100%{transform:translateX(-100%)}85%{transform:translateX(100%)}}
-        .spin-btn:hover{box-shadow:0 3px 25px rgba(0,212,255,0.4);transform:translateY(-1px)}
-        .spin-btn:active{transform:scale(.97)}
-        .spin-btn:disabled{opacity:.35;box-shadow:none;cursor:not-allowed;transform:none}
-        .spin-btn .cost{display:block;font-size:9px;font-weight:400;opacity:.6;margin-top:1px;letter-spacing:1px}
+        .truck-target:active { transform: translate(-50%, -50%) scale(0.9); }
+        
+        .tap-hint { position: absolute; top: 20px; width: 100%; text-align: center; color: #fff; font-weight: 800; font-size: 20px; text-shadow: 0 2px 4px #000; pointer-events: none; }
+        .progress-bar { position: absolute; bottom: 20px; left: 20px; right: 20px; height: 20px; background: #1e293b; border-radius: 10px; overflow: hidden; border: 2px solid #fff; }
+        .progress-fill { height: 100%; width: 0%; background: #ef4444; transition: width 0.1s; }
 
-        /* ====== ЭКОСИСТЕМА ====== */
-        .eco{
-            text-align:left;margin-top:10px;padding:10px;
-            background:rgba(108,92,231,0.05);
-            border:1px solid rgba(108,92,231,0.15);
-            border-radius:10px;font-size:11px;line-height:1.6;
-        }
-        .eco-t{color:#a29bfe;font-weight:700;margin-bottom:4px;font-size:11px}
-        .eco-i{color:#777}
-        .eco-i b{font-weight:600}
+        /* Частицы взрыва */
+        .particle { position: absolute; pointer-events: none; animation: explode 1s forwards; }
+        @keyframes explode { 0% { transform: translate(0,0) scale(1); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; } }
 
-        /* ====== РАЗРАБОТЧИКИ ====== */
-        .dev-footer{
-            margin-top:10px;padding:8px;
-            background:rgba(0,212,255,0.04);
-            border:1px solid rgba(0,212,255,0.1);
-            border-radius:10px;
-            font-size:10px;color:#445;
-            text-align:center;line-height:1.5;
-        }
-        .dev-footer a{color:#00d4ff;text-decoration:none;font-weight:600}
-        .dev-footer a:hover{text-decoration:underline}
-
-        .back{display:inline-block;margin-top:8px;color:rgba(0,212,255,.4);text-decoration:none;font-size:11px}
-        .back:hover{color:#00d4ff}
-
-        /* ====== КОНФЕТТИ ====== */
-        .confetti-layer{position:fixed;inset:0;pointer-events:none;z-index:50;overflow:hidden}
-        .confetti{position:absolute;border-radius:2px;animation:confFall linear forwards}
-        @keyframes confFall{
-            0%{transform:translateY(0) rotate(0deg) scale(1);opacity:1}
-            100%{transform:translateY(110vh) rotate(720deg) scale(.2);opacity:0}
-        }
-
-        /* ====== ЭКРАН ПОБЕДЫ ====== */
-        .win-ov{
-            position:fixed;inset:0;z-index:60;
-            display:flex;align-items:center;justify-content:center;flex-direction:column;
-            background:rgba(0,0,0,.75);backdrop-filter:blur(10px);
-            opacity:0;pointer-events:none;transition:opacity .4s;
-        }
-        .win-ov.active{opacity:1;pointer-events:auto}
-        .win-ov-logo{width:60px;height:60px;object-fit:contain;margin-bottom:10px;filter:drop-shadow(0 0 15px rgba(0,140,255,0.5))}
-        .win-t{
-            font-size:42px;font-weight:900;text-align:center;line-height:1.2;
-            animation:winP .6s ease-in-out infinite alternate;
-        }
-        .win-s{font-size:16px;color:#aaa;margin-top:8px;text-align:center;max-width:300px}
-        .win-c{
-            margin-top:20px;padding:8px 24px;
-            background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
-            border-radius:18px;color:#fff;font-size:13px;cursor:pointer;transition:all .2s;
-        }
-        .win-c:hover{background:rgba(255,255,255,.15)}
-        @keyframes winP{0%{transform:scale(1);filter:brightness(1)}100%{transform:scale(1.04);filter:brightness(1.2)}}
-
-        /* ====== ПАРТНЁРЫ ====== */
-        .pbar{
-            position:fixed;bottom:0;left:0;width:100%;
-            background:rgba(7,7,14,.96);
-            border-top:1px solid rgba(0,212,255,.1);
-            z-index:15;padding:6px 0;overflow:hidden;white-space:nowrap;
-        }
-        .ptrack{display:inline-block;animation:pScr 40s linear infinite;font-size:11px}
-        .pitem{
-            display:inline-block;color:#aaa;margin:0 15px;
-            padding:3px 10px;background:rgba(0,212,255,.04);
-            border:1px solid rgba(0,212,255,.1);border-radius:12px;
-        }
-        .pitem em{color:#00ffaa;font-weight:700;font-style:normal}
-        @keyframes pScr{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-
-        /* ====== КНОПКИ УПРАВЛЕНИЯ ====== */
-        .ctrl-btns{position:fixed;top:10px;right:10px;z-index:100;display:flex;gap:5px}
-        .ctrl-btn{
-            width:32px;height:32px;
-            background:rgba(0,0,0,.5);border:1px solid rgba(0,212,255,.2);
-            border-radius:50%;font-size:14px;cursor:pointer;
-            display:flex;align-items:center;justify-content:center;
-            transition:all .2s;color:#fff;
-        }
-        .ctrl-btn:hover{border-color:#00d4ff}
-        .ctrl-btn.off{opacity:.4}
     </style>
 </head>
 <body>
 
-<!-- ФОН -->
-<canvas class="bg-canvas bg-scene" id="bgCanvas"></canvas>
+    <!-- Падающие бочки -->
+    <div class="falling-barrels" id="bgBarrels"></div>
 
-<!-- БОКОВЫЕ ЛЕНТОЧКИ -->
-<div class="ribbon ribbon-left">
-    <div class="ribbon-inner">
-        <span>✦ Здесь может быть ваша реклама ✦</span>
-        <span>🛢️ Топливная компания SINED ✦</span>
-        <span>✦ Здесь может быть ваша реклама ✦</span>
-        <span>🛢️ Топливная компания SINED ✦</span>
-        <span>✦ Здесь может быть ваша реклама ✦</span>
-        <span>🛢️ Топливная компания SINED ✦</span>
-        <span>✦ Здесь может быть ваша реклама ✦</span>
-        <span>🛢️ Топливная компания SINED ✦</span>
-    </div>
-</div>
-<div class="ribbon ribbon-right">
-    <div class="ribbon-inner">
-        <span>🚛 Одна из лучших в СПб и ЛО</span>
-        <span>⛽ Доставка топлива 24/7</span>
-        <span>🚛 Одна из лучших в СПб и ЛО</span>
-        <span>⛽ Доставка топлива 24/7</span>
-        <span>🚛 Одна из лучших в СПб и ЛО</span>
-        <span>⛽ Доставка топлива 24/7</span>
-        <span>🚛 Одна из лучших в СПб и ЛО</span>
-        <span>⛽ Доставка топлива 24/7</span>
-    </div>
-</div>
-
-<!-- УПРАВЛЕНИЕ -->
-<div class="ctrl-btns">
-    <button class="ctrl-btn" id="btnSfx" onclick="toggleSfx()" title="Звуки">🔊</button>
-    <button class="ctrl-btn off" id="btnMus" onclick="toggleMus()" title="Музыка">🎵</button>
-</div>
-
-<!-- ИГРА -->
-<div class="wrapper">
-
-    <!-- ЛОГОТИП -->
-    <div class="logo-block">
-        <img src="logo.png" alt="SINED" class="logo-img"
-             onerror="this.style.display='none'">
-        <div class="logo-text">СИНЕД</div>
-        <div class="logo-sub">Топливная компания • Санкт-Петербург</div>
+    <!-- Управление -->
+    <div class="controls">
+        <div class="ctrl-btn" id="soundBtn" onclick="toggleSound()">🔊</div>
     </div>
 
     <div class="game-card">
+        <div class="logo-header">
+            <!-- Логотип подгрузится, если файл лежит рядом -->
+            <img src="logo-sined.png" alt="S" class="logo-img" onerror="this.style.display='none'">
+            <div class="brand-logo">SINED</div>
+            <div class="brand-sub">Топливная компания</div>
+        </div>
 
-        <!-- ДЖЕКПОТ -->
-        <div class="jp-bar"><div class="jp-track">
-            <span class="jp-l">🏆 ДЖЕКПОТ: <span class="jp-v" id="jp1">0</span> л</span>
-            <span>🎰 Крутите — выигрывайте!</span>
-            <span>📈 +1 л за спин</span>
-            <span>🎯 ШАНС — бесплатная доставка!</span>
-            <span class="jp-l">🏆 ДЖЕКПОТ: <span class="jp-v" id="jp2">0</span> л</span>
-            <span>🎰 Крутите — выигрывайте!</span>
-            <span>📈 +1 л за спин</span>
-            <span>🎯 ШАНС — бесплатная доставка!</span>
-        </div></div>
-
-        <!-- КОЛЕСО -->
-        <div class="wheel-sec">
-            <div class="wheel-wrap">
-                <div class="wheel-outer-ring"></div>
-                <div class="pointer">
-                    <div class="ptr-dot"></div>
-                    <div class="ptr-arrow"></div>
-                </div>
-                <canvas id="wheelCanvas" width="600" height="600"></canvas>
+        <div class="jackpot-bar">
+            <div class="jackpot-track">
+                <span class="label">🏆 ДЖЕКПОТ: <span class="val" id="jackpotDisplay">0</span> Л!</span>
+                <span>|</span>
+                <span>Крутите и выигрывайте топливо!</span>
+                <span>|</span>
+                <span class="label">🏆 ДЖЕКПОТ: <span class="val" id="jackpotDisplay2">0</span> Л!</span>
+                <span>|</span>
+                <span>Крутите и выигрывайте топливо!</span>
             </div>
         </div>
 
-        <!-- ПРИЗ -->
-        <div class="prize-box">
-            <div class="prize-lbl">ваш выигрыш</div>
-            <div class="prize-val" id="prizeDisp">🎰 <small>Крутите!</small></div>
+        <div class="wheel-container">
+            <div class="pointer"></div>
+            <div class="wheel-wrapper">
+                <canvas id="wheelCanvas" width="500" height="500"></canvas>
+            </div>
         </div>
-
-        <!-- КНОПКА (УМЕНЬШЕНА) -->
-        <button class="spin-btn" id="spinBtn">
-            🎰 КРУТИТЬ
+        
+        <div class="prize-panel">
+            <div class="prize-label">ВАШ ВЫИГРЫШ</div>
+            <div class="prize-value" id="prizeDisplay">0 <small>л</small></div>
+        </div>
+        
+        <button class="spin-btn" id="spinButton">
+            КРУТИТЬ
             <span class="cost">1 $SINED</span>
         </button>
 
-        <!-- ЭКОСИСТЕМА -->
-        <div class="eco">
-            <div class="eco-t">🌐 Экосистема SINED</div>
-            <div class="eco-i">💰 <b style="color:#00ffaa">$SINED</b> — внутренняя валюта</div>
-            <div class="eco-i">🎰 <b style="color:#ffd700">Рулетка</b> — 1 $SINED за спин</div>
-            <div class="eco-i">🏆 <b style="color:#ff006e">Джекпот</b> — копится с каждого вращения</div>
-            <div class="eco-i">🎯 <b style="color:#ffd700">ШАНС</b> — бесплатная доставка / приз</div>
-            <div class="eco-i">🛢️ <b style="color:#00d4ff">Бонус</b> — до 10% от заказа</div>
-            <div class="eco-i">👥 <b style="color:#a29bfe">Рефералы</b> — пригласи друга → +10 $SINED</div>
+        <div class="ecosystem">
+            <div class="ttl">🌐 ЭКОСИСТЕМА SINED</div>
+            <div class="itm">💰 Токены $SINED внутри приложения</div>
+            <div class="itm">👥 Рефералы: +10 $SINED за друга</div>
+            <div class="itm">🎁 Шанс: Останови бензовоз тапами!</div>
         </div>
 
-        <!-- РАЗРАБОТЧИКИ -->
-        <div class="dev-footer">
-            🛠 Разработка экосистемы:
-            <a href="https://ai-startup.pro" target="_blank">ai-startup.pro</a>
-            <br>
-            ⛽ Топливная компания
-            <a href="https://robit1984.github.io/sined-fuelopt-landing/" target="_blank">SINED</a>
-            — СПб и Лен. область
+        <div class="dev-credit">
+            Dev: <a href="https://ai-startup.pro" target="_blank">ai-startup.pro</a>
         </div>
-
-        <a href="https://robit1984.github.io/sined-fuelopt-landing/" class="back">← На главную</a>
     </div>
-</div>
 
-<!-- ПАРТНЁРЫ -->
-<div class="pbar"><div class="ptrack">
-    <span class="pitem">🛒 Яндекс.Заправки <em>-15%</em></span>
-    <span class="pitem">🛍️ OZON <em>-10%</em></span>
-    <span class="pitem">🚗 Автодок <em>-20%</em></span>
-    <span class="pitem">🏪 Лента <em>-5%</em></span>
-    <span class="pitem">🔧 FIT SERVICE <em>-12%</em></span>
-    <span class="pitem">🛒 Яндекс.Заправки <em>-15%</em></span>
-    <span class="pitem">🛍️ OZON <em>-10%</em></span>
-    <span class="pitem">🚗 Автодок <em>-20%</em></span>
-    <span class="pitem">🏪 Лента <em>-5%</em></span>
-    <span class="pitem">🔧 FIT SERVICE <em>-12%</em></span>
-</div></div>
-
-<!-- КОНФЕТТИ -->
-<div class="confetti-layer" id="confLayer"></div>
-
-<!-- ЭКРАН ПОБЕДЫ -->
-<div class="win-ov" id="winOv">
-    <img src="logo.png" class="win-ov-logo" onerror="this.style.display='none'">
-    <div class="win-t" id="winT"></div>
-    <div class="win-s" id="winS"></div>
-    <button class="win-c" id="winC">Продолжить</button>
-</div>
+    <!-- МИНИ-ИГРА ОВЕРЛЕЙ -->
+    <div id="chanceOverlay">
+        <div class="truck-game-area" id="gameArea">
+            <div class="road"><div class="road-lines"></div></div>
+            <div class="tap-hint">ТАПАЙ БЫСТРЕЕ! <br><span id="tapsCount" style="font-size:30px; color:#fbbf24">0</span>/20</div>
+            <div class="truck-target" id="truckTarget" onclick="tapTruck()">🚛</div>
+            <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        </div>
+    </div>
 
 <script>
-/*===========================================================
-   SINED ROULETTE v3  —  ПОЛНАЯ ПЕРЕРАБОТКА
-   ===========================================================*/
+    // --- НАСТРОЙКИ ---
+    const sectors = [
+        {label:'ДЖЕК', color:'#f43f5e', prize:'jackpot'}, // Розовый
+        {label:'5 Л', color:'#10b981', prize:5},          // Зеленый
+        {label:'0 Л', color:'#64748b', prize:0},          // Серый
+        {label:'3 Л', color:'#0ea5e9', prize:3},          // Голубой
+        {label:'0 Л', color:'#64748b', prize:0},
+        {label:'4 Л', color:'#f59e0b', prize:4},          // Оранжевый
+        {label:'0 Л', color:'#64748b', prize:0},
+        {label:'2 Л', color:'#8b5cf6', prize:2},          // Фиолетовый
+        {label:'0 Л', color:'#64748b', prize:0},
+        {label:'1 Л', color:'#ef4444', prize:1},          // Красный
+        {label:'0 Л', color:'#64748b', prize:0},
+        {label:'ШАНС', color:'#eab308', prize:'chance'},  // Желтый
+    ];
 
-// ============= СЕКТОРЫ (логика не тронута) =============
-const SECTORS = [
-    { label:'ДЖЕКПОТ', color:'#ff006e', prize:'jackpot', icon:'🏆' },
-    { label:'5 Л',     color:'#1a6b3f', prize:5,         icon:'🛢️' },
-    { label:'0 Л',     color:'#2a2a2a', prize:0,         icon:'' },
-    { label:'3 Л',     color:'#006699', prize:3,         icon:'🛢️' },
-    { label:'0 Л',     color:'#2a2a2a', prize:0,         icon:'' },
-    { label:'4 Л',     color:'#8a6d00', prize:4,         icon:'🛢️' },
-    { label:'0 Л',     color:'#2a2a2a', prize:0,         icon:'' },
-    { label:'2 Л',     color:'#3d1266', prize:2,         icon:'🛢️' },
-    { label:'0 Л',     color:'#2a2a2a', prize:0,         icon:'' },
-    { label:'1 Л',     color:'#8a4400', prize:1,         icon:'🛢️' },
-    { label:'ШАНС',    color:'#7a6800', prize:'chance',  icon:'🎯' },
-    { label:'0 Л',     color:'#2a2a2a', prize:0,         icon:'' },
-];
+    // --- ПЕРЕМЕННЫЕ ---
+    let jackpot = 100;
+    let spinning = false;
+    let currentRotation = 0;
+    let soundEnabled = true;
+    let audioCtx = null;
+    
+    // Элементы
+    const canvas = document.getElementById('wheelCanvas');
+    const ctx = canvas.getContext('2d');
+    const prizeDisplay = document.getElementById('prizeDisplay');
+    const spinBtn = document.getElementById('spinButton');
 
-const N = SECTORS.length;
-const SA = 360 / N;       // 30° на сектор
-const POINTER_DEG = 270;  // указатель сверху (canvas: 0°=право, 270°=верх)
-
-// ============= СОСТОЯНИЕ =============
-let jackpot = 0, spinning = false, sfxOn = true, musOn = false;
-let curRot = 0, audioCtx = null;
-
-// ============= DOM =============
-const cvs = document.getElementById('wheelCanvas');
-const ctx = cvs.getContext('2d');
-const prizeD = document.getElementById('prizeDisp');
-const spinB = document.getElementById('spinBtn');
-const jp1 = document.getElementById('jp1');
-const jp2 = document.getElementById('jp2');
-
-// HiDPI
-const DPR = Math.min(window.devicePixelRatio || 1, 2);
-const CW = 600;
-cvs.width = CW * DPR; cvs.height = CW * DPR;
-ctx.scale(DPR, DPR);
-
-// ============= АУДИО =============
-function initAudio(){
-    if(!audioCtx) try{ audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){}
-}
-
-function tone(f,d,type='sine',vol=.1){
-    if(!sfxOn||!audioCtx)return;
-    try{
-        const o=audioCtx.createOscillator(),g=audioCtx.createGain();
-        o.connect(g);g.connect(audioCtx.destination);
-        o.type=type;o.frequency.value=f;
-        g.gain.setValueAtTime(vol,audioCtx.currentTime);
-        g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+d);
-        o.start();o.stop(audioCtx.currentTime+d);
-    }catch(e){}
-}
-
-const sfxClick=()=>tone(900,.06);
-const sfxSpin=()=>{for(let i=0;i<10;i++)setTimeout(()=>tone(100+Math.random()*200,.03,'square',.04),i*70)};
-const sfxWin=()=>[523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,.22,'sine',.1),i*90));
-const sfxLose=()=>tone(120,.3,'sine',.06);
-const sfxJP=()=>[330,415,523,659,784,1047,1318].forEach((f,i)=>setTimeout(()=>{tone(f,.4,'sine',.14);tone(f*1.5,.3,'triangle',.05)},i*90));
-const sfxCh=()=>[440,554,659,880].forEach((f,i)=>setTimeout(()=>{tone(f,.3,'triangle',.1);tone(f*2,.2,'sine',.04)},i*110));
-
-// --- Фоновая музыка (приятный ambient loop) ---
-let musLoop = null;
-const CHORDS = [
-    // Am        Em        F         C
-    [220,261.6,329.6], [164.8,246.9,329.6], [174.6,261.6,349.2], [130.8,196,261.6],
-    // Dm        Am        E         Am
-    [146.8,220,293.7], [220,261.6,329.6], [164.8,246.9,311.1], [220,261.6,329.6],
-];
-const CHORD_DUR = 2.0; // секунд на аккорд
-
-function playMusicLoop(){
-    if(!musOn||!audioCtx) return;
-    let t = audioCtx.currentTime + 0.05;
-    CHORDS.forEach(chord=>{
-        chord.forEach(freq=>{
-            // Pad: sine
-            const o=audioCtx.createOscillator(),g=audioCtx.createGain();
-            o.connect(g);g.connect(audioCtx.destination);
-            o.type='sine';o.frequency.value=freq;
-            g.gain.setValueAtTime(0,t);
-            g.gain.linearRampToValueAtTime(.025,t+.3);
-            g.gain.setValueAtTime(.025,t+CHORD_DUR-.4);
-            g.gain.linearRampToValueAtTime(0,t+CHORD_DUR);
-            o.start(t);o.stop(t+CHORD_DUR);
-            // Triangle обертон
-            const o2=audioCtx.createOscillator(),g2=audioCtx.createGain();
-            o2.connect(g2);g2.connect(audioCtx.destination);
-            o2.type='triangle';o2.frequency.value=freq*2;
-            g2.gain.setValueAtTime(0,t);
-            g2.gain.linearRampToValueAtTime(.008,t+.3);
-            g2.gain.linearRampToValueAtTime(0,t+CHORD_DUR);
-            o2.start(t);o2.stop(t+CHORD_DUR);
-        });
-        t += CHORD_DUR;
-    });
-}
-
-function startMus(){
-    if(musLoop) return;
-    initAudio();
-    playMusicLoop();
-    const total = CHORDS.length * CHORD_DUR * 1000;
-    musLoop = setInterval(playMusicLoop, total);
-}
-function stopMus(){if(musLoop){clearInterval(musLoop);musLoop=null}}
-
-function toggleMus(){
-    musOn=!musOn;
-    const b=document.getElementById('btnMus');
-    b.classList.toggle('off',!musOn);
-    if(musOn) startMus(); else stopMus();
-}
-function toggleSfx(){
-    sfxOn=!sfxOn;
-    document.getElementById('btnSfx').textContent=sfxOn?'🔊':'🔇';
-    document.getElementById('btnSfx').classList.toggle('off',!sfxOn);
-}
-
-// ============= РИСУЕМ КОЛЕСО =============
-function drawWheel(rot){
-    const cx=CW/2, cy=CW/2, R=CW/2-16; // <-- радиус МЕНЬШЕ canvas чтобы не вылезал
-
-    ctx.clearRect(0,0,CW,CW);
-
-    // Свечение вокруг
-    const glow=ctx.createRadialGradient(cx,cy,R-5,cx,cy,R+10);
-    glow.addColorStop(0,'rgba(0,212,255,0)');
-    glow.addColorStop(.7,'rgba(0,212,255,.06)');
-    glow.addColorStop(1,'rgba(0,212,255,0)');
-    ctx.beginPath();ctx.arc(cx,cy,R+10,0,Math.PI*2);ctx.fillStyle=glow;ctx.fill();
-
-    ctx.save();
-    ctx.translate(cx,cy);
-    ctx.rotate(rot*Math.PI/180);
-
-    SECTORS.forEach((s,i)=>{
-        const a1=i*SA*Math.PI/180;
-        const a2=(i+1)*SA*Math.PI/180;
-        const mid=(i+.5)*SA*Math.PI/180;
-
-        // Сектор
-        ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,R,a1,a2);ctx.closePath();
-
-        // Градиент внутри сектора
-        const sg=ctx.createRadialGradient(0,0,R*.15,0,0,R);
-        sg.addColorStop(0,lighten(s.color,.15));
-        sg.addColorStop(1,s.color);
-        ctx.fillStyle=sg;
-        ctx.fill();
-
-        // Обводка
-        ctx.strokeStyle='rgba(0,0,0,.6)';ctx.lineWidth=2.5;ctx.stroke();
-
-        // Декор для особых
-        if(s.prize==='jackpot'||s.prize==='chance'){
-            ctx.save();ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,R,a1,a2);ctx.closePath();
-            ctx.clip();
-            const sc=s.prize==='jackpot'?'rgba(255,0,110,.3)':'rgba(255,215,0,.3)';
-            ctx.strokeStyle=sc;ctx.lineWidth=6;ctx.stroke();
-            ctx.restore();
+    // --- ИНИЦИАЛИЗАЦИЯ ФОНА (БОЧКИ) ---
+    function initBackground() {
+        const container = document.getElementById('bgBarrels');
+        for(let i=0; i<15; i++) {
+            let b = document.createElement('div');
+            b.className = 'falling-barrel';
+            b.innerText = '🛢️';
+            b.style.left = Math.random() * 100 + '%';
+            b.style.animationDuration = (Math.random() * 5 + 5) + 's';
+            b.style.animationDelay = (Math.random() * 5) + 's';
+            b.style.fontSize = (Math.random() * 20 + 15) + 'px';
+            container.appendChild(b);
         }
+    }
+    initBackground();
 
-        // --- ТЕКСТ (ВСЕГДА ЧИТАЕМЫЙ) ---
+    // --- ЗВУК (Web Audio API для простой мелодии) ---
+    function initAudio() {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    
+    function playTone(freq, type, duration, vol=0.1) {
+        if (!soundEnabled || !audioCtx) return;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+    }
+
+    function playSpinSound() { playTone(200, 'triangle', 0.05, 0.05); }
+    function playWinSound() { 
+        [523, 659, 784, 1046].forEach((f, i) => setTimeout(() => playTone(f, 'sine', 0.3, 0.2), i*100)); 
+    }
+    function playJackpotSound() {
+        [440, 554, 659, 880].forEach((f, i) => setTimeout(() => playTone(f, 'square', 0.4, 0.1), i*150));
+    }
+    // Простая фоновая мелодия (арпеджио)
+    let bgmInterval;
+    function startBGM() {
+        if(bgmInterval) return;
+        let notes = [329, 392, 493, 392, 329, 293, 261, 293]; // E G B G E D C D
+        let i = 0;
+        bgmInterval = setInterval(() => {
+            if(soundEnabled && !spinning) playTone(notes[i], 'sine', 0.5, 0.03);
+            i = (i+1) % notes.length;
+        }, 400);
+    }
+    function toggleSound() {
+        soundEnabled = !soundEnabled;
+        document.getElementById('soundBtn').innerText = soundEnabled ? '🔊' : '🔇';
+        if(soundEnabled) { initAudio(); startBGM(); } else { clearInterval(bgmInterval); bgmInterval=null; }
+    }
+
+    // --- РИСОВАНИЕ КОЛЕСА ---
+    function drawWheel(rotation) {
+        ctx.clearRect(0, 0, 500, 500);
+        const cx = 250, cy = 250, r = 240; // Радиус чуть меньше холста
+        const step = 360 / sectors.length;
+
         ctx.save();
-        ctx.rotate(mid);
+        ctx.translate(cx, cy);
+        ctx.rotate(rotation * Math.PI / 180);
 
-        // Определяем нужно ли переворачивать текст
-        const degMid = (i+.5)*SA;
-        const flip = degMid > 90 && degMid < 270;
-
-        if(flip){
-            // Переворачиваем для левой половины
-            ctx.rotate(Math.PI);
-            ctx.textAlign='left';
-            const textR = R-25;
-
-            // тень
-            ctx.fillStyle='rgba(0,0,0,.6)';
-            ctx.font='bold 18px Arial';
-            ctx.textBaseline='middle';
-            ctx.fillText(s.label, -textR+10, 1);
-            // текст
-            ctx.fillStyle='#fff';
-            ctx.fillText(s.label, -textR+10, 0);
-        } else {
-            ctx.textAlign='right';
-            const textR = R-25;
-
-            ctx.fillStyle='rgba(0,0,0,.6)';
-            ctx.font='bold 18px Arial';
-            ctx.textBaseline='middle';
-            ctx.fillText(s.label, textR, 1);
-            ctx.fillStyle='#fff';
-            ctx.fillText(s.label, textR, 0);
-        }
-
+        sectors.forEach((s, i) => {
+            const startAngle = (i * step - 90 - step/2) * Math.PI / 180;
+            const endAngle = ((i + 1) * step - 90 - step/2) * Math.PI / 180;
+            
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.arc(0, 0, r, startAngle, endAngle);
+            ctx.fillStyle = s.color;
+            ctx.fill();
+            
+            // Текст
+            ctx.save();
+            ctx.rotate((i * step - 90) * Math.PI / 180);
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 24px Inter';
+            ctx.textAlign = 'right';
+            ctx.shadowColor = "rgba(0,0,0,0.5)";
+            ctx.shadowBlur = 4;
+            ctx.fillText(s.label, r - 30, 8);
+            ctx.restore();
+        });
         ctx.restore();
-    });
 
-    ctx.restore();
-
-    // Тёмное кольцо в центре
-    const cg=ctx.createRadialGradient(cx,cy,0,cx,cy,38);
-    cg.addColorStop(0,'#1e1e36');cg.addColorStop(1,'#0e0e1c');
-    ctx.beginPath();ctx.arc(cx,cy,36,0,Math.PI*2);
-    ctx.fillStyle=cg;ctx.fill();
-    ctx.strokeStyle='#00d4ff';ctx.lineWidth=3;ctx.stroke();
-
-    // Центральная иконка
-    ctx.font='22px Arial';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillStyle='#fff';ctx.fillText('⛽',cx,cy);
-}
-
-function lighten(hex,amt){
-    let r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
-    r=Math.min(255,r+Math.round(255*amt));
-    g=Math.min(255,g+Math.round(255*amt));
-    b=Math.min(255,b+Math.round(255*amt));
-    return `rgb(${r},${g},${b})`;
-}
-
-// ============= ВРАЩЕНИЕ =============
-function spin(){
-    if(spinning) return;
-    initAudio(); sfxClick();
-
-    spinning = true;
-    spinB.disabled = true;
-
-    jackpot += 1;
-    updJP();
-
-    // Выбор приза
-    let rnd = Math.random(), winIdx;
-    if(rnd < 0.01){
-        // джекпот 1%
-        const ji=SECTORS.map((s,i)=>s.prize==='jackpot'?i:-1).filter(i=>i>=0);
-        winIdx=ji[Math.floor(Math.random()*ji.length)];
-    } else if(rnd < 0.035){
-        // шанс 2.5%
-        const ci=SECTORS.map((s,i)=>s.prize==='chance'?i:-1).filter(i=>i>=0);
-        winIdx=ci[Math.floor(Math.random()*ci.length)];
-    } else {
-        winIdx=Math.floor(Math.random()*N);
+        // Центр
+        ctx.beginPath(); ctx.arc(cx, cy, 40, 0, Math.PI*2);
+        ctx.fillStyle = '#fff'; ctx.fill();
+        ctx.lineWidth = 5; ctx.strokeStyle = '#0f172a'; ctx.stroke();
+        ctx.fillStyle = '#0f172a'; ctx.font = '30px Arial'; ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillText('S', cx, cy+2);
     }
-    const win = SECTORS[winIdx];
 
-    // --- МАТЕМАТИКА ЦЕНТРОВКИ (ИСПРАВЛЕНА) ---
-    // Центр сектора в canvas-градусах (от 0°=право по часовой)
-    const secCenter = (winIdx + 0.5) * SA;
-    // Рандом ±40% внутри сектора
-    const wobble = (Math.random() - 0.5) * SA * 0.4;
-    // Целевой угол: нужно чтобы secCenter + rotation ≡ POINTER_DEG
-    // rotation ≡ POINTER_DEG - secCenter
-    let targetMod = ((POINTER_DEG - secCenter + wobble) % 360 + 360) % 360;
-    let curMod = ((curRot % 360) + 360) % 360;
-    let delta = targetMod - curMod;
-    if(delta < 0) delta += 360;
+    // --- ЛОГИКА ВРАЩЕНИЯ ---
+    function spin() {
+        initAudio(); startBGM();
+        if (spinning) return;
+        spinning = true;
+        spinBtn.disabled = true;
+        prizeDisplay.innerHTML = '...';
 
-    const fullSpins = (5 + Math.floor(Math.random() * 3)) * 360;
-    const targetRot = curRot + fullSpins + delta;
+        // Определение победителя
+        const rand = Math.random();
+        let winIndex;
+        if (rand < 0.02) winIndex = 0; // Джекпот 2%
+        else if (rand < 0.07) winIndex = 11; // Шанс 5%
+        else winIndex = Math.floor(Math.random() * sectors.length);
 
-    sfxSpin();
+        const win = sectors[winIndex];
+        const step = 360 / sectors.length;
+        // Расчет угла чтобы сектор встал наверх (на 12 часов)
+        // Сектор 0 начинается с -90 градусов. Нам нужно повернуть колесо так, чтобы центр сектора был на -90.
+        // Формула: target = 360 * spins + (360 - (winIndex * step))
+        const spins = 5 + Math.random() * 3;
+        const targetRotation = currentRotation + (spins * 360) + (360 - (winIndex * step)) - (currentRotation % 360);
 
-    // Анимация
-    const startR = curRot;
-    const total = targetRot - startR;
-    const dur = 4500 + Math.random() * 500;
-    const t0 = performance.now();
+        let start = null;
+        const duration = 4000;
 
-    function ease(t){ return 1 - Math.pow(1-t, 3.5); }
-
-    // Тиковый звук
-    let lastTickSector = -1;
-    function tickCheck(){
-        if(!sfxOn) return;
-        const nr = ((curRot % 360)+360)%360;
-        const pos = ((POINTER_DEG - nr) % 360 + 360) % 360;
-        const sec = Math.floor(pos / SA);
-        if(sec !== lastTickSector){
-            lastTickSector = sec;
-            tone(500+Math.random()*200, .03, 'square', .03);
+        function animate(time) {
+            if (!start) start = time;
+            const progress = (time - start) / duration;
+            
+            if (progress < 1) {
+                // Easing function (easeOutCubic)
+                const ease = 1 - Math.pow(1 - progress, 3);
+                currentRotation = currentRotation + (targetRotation - currentRotation) * ease * 0.1; // упрощенная интерполяция
+                
+                // Более точная анимация
+                const currentAngle = (targetRotation - (currentRotation % 360 + 360) % 360) * ease; // нет, проще так:
+                
+                // Используем простую линейную интерполяцию для угла
+                // На самом деле лучше так:
+                const rot = (targetRotation - (currentRotation % 360)) * ease; // это сложно
+                
+                // Давайте проще:
+                const angleNow = (targetRotation - currentRotation) * ease; // нет
+                
+                // Правильная анимация вращения:
+                // Мы хотим от currentRotation до targetRotation
+                // Но currentRotation растет.
+                // Давайте пересчитаем:
+                const totalRotationNeeded = (spins * 360) + (360 - (winIndex * step)) - (currentRotation % 360);
+                // Это сложно синхронизировать с предыдущим состоянием.
+                // Проще:
+                const finalAngle = currentRotation + (spins * 360) + (360 - (winIndex * step)) - (currentRotation % 360);
+                
+                // Анимация
+                const t = Math.min(1, progress);
+                const easeT = 1 - Math.pow(1 - t, 4); // Quartic ease out
+                const angle = currentRotation + (finalAngle - currentRotation) * easeT; // Ошибка логики тут
+                
+                // Исправленная логика анимации:
+                // Запоминаем старт
+                if (!window.animStartRot) window.animStartRot = currentRotation;
+                const dist = (spins * 360) + (360 - (winIndex * step)) - (window.animStartRot % 360);
+                // Корректировка, чтобы всегда крутилось вперед
+                const totalDist = dist + (spins*360); 
+                
+                currentRotation = window.animStartRot + totalDist * easeT;
+                
+                drawWheel(currentRotation);
+                if (Math.floor(currentRotation / 10) % 2 === 0) playSpinSound();
+                requestAnimationFrame(animate);
+            } else {
+                currentRotation = targetRotation; // Фиксация
+                // Пересчет для следующего раза чтобы не сбивалось
+                // currentRotation %= 360; // Не сбрасываем, чтобы не дергалось
+                window.animStartRot = currentRotation;
+                
+                drawWheel(currentRotation);
+                spinning = false;
+                spinBtn.disabled = false;
+                handleWin(win);
+            }
         }
+        window.animStartRot = currentRotation;
+        requestAnimationFrame(animate);
     }
 
-    function tick(now){
-        const el = now - t0;
-        const p = Math.min(el/dur, 1);
-        curRot = startR + total * ease(p);
-        drawWheel(curRot);
-        tickCheck();
-
-        if(p<1){
-            requestAnimationFrame(tick);
+    function handleWin(win) {
+        if (win.prize === 'jackpot') {
+            prizeDisplay.innerHTML = 'ДЖЕКПОТ! <small>10л</small>';
+            prizeDisplay.style.color = '#e11d48';
+            playJackpotSound();
+        } else if (win.prize === 'chance') {
+            prizeDisplay.innerHTML = 'ШАНС!';
+            startChanceGame();
+        } else if (win.prize === 0) {
+            prizeDisplay.innerHTML = '0 <small>л</small>';
+            prizeDisplay.style.color = '#94a3b8';
         } else {
-            curRot = targetRot;
-            drawWheel(curRot);
-            showResult(win);
+            prizeDisplay.innerHTML = win.prize + ' <small>л</small>';
+            prizeDisplay.style.color = '#0f172a';
+            playWinSound();
+        }
+        
+        // Обновление джекпота
+        jackpot++;
+        document.getElementById('jackpotDisplay').innerText = jackpot;
+        document.getElementById('jackpotDisplay2').innerText = jackpot;
+    }
+
+    // --- МИНИ-ИГРА "ШАНС" ---
+    let taps = 0;
+    const maxTaps = 20;
+    const truckTarget = document.getElementById('truckTarget');
+    const progressFill = document.getElementById('progressFill');
+    const tapsCount = document.getElementById('tapsCount');
+    const overlay = document.getElementById('chanceOverlay');
+
+    function startChanceGame() {
+        overlay.style.display = 'flex';
+        taps = 0;
+        updateGameUI();
+        playTone(150, 'sawtooth', 1.0, 0.2); // Звук двигателя
+    }
+
+    function tapTruck() {
+        taps++;
+        // Вибрация
+        if (navigator.vibrate) navigator.vibrate(50);
+        
+        updateGameUI();
+        
+        // Звук торможения (повышение тона)
+        playTone(100 + taps*20, 'square', 0.1, 0.1);
+
+        if (taps >= maxTaps) {
+            winChanceGame();
         }
     }
-    requestAnimationFrame(tick);
-}
 
-// ============= РЕЗУЛЬТАТ =============
-function showResult(win){
-    prizeD.className='prize-val';
-
-    if(win.prize==='jackpot'){
-        prizeD.innerHTML='🏆 ДЖЕКПОТ! <small>'+jackpot+' л</small>';
-        prizeD.classList.add('pv-jp');
-        launchConfetti(300);
-        showWin('🏆🎉🏆','ДЖЕКПОТ!','Вы выиграли '+jackpot+' литров топлива!','#ff006e');
-        sfxJP();
-    } else if(win.prize==='chance'){
-        prizeD.innerHTML='🎯 ШАНС! <small>Приз!</small>';
-        prizeD.classList.add('pv-ch');
-        launchConfetti(180);
-        showWin('🎯✨🎯','ШАНС!','Бесплатная доставка топлива или брендированный приз от SINED!','#ffd700');
-        sfxCh();
-    } else if(win.prize===0){
-        prizeD.innerHTML='0 <small>л</small>';
-        prizeD.classList.add('pv-lose');
-        sfxLose();
-    } else {
-        prizeD.innerHTML=win.prize+' <small>л</small>';
-        launchConfetti(50);
-        sfxWin();
+    function updateGameUI() {
+        tapsCount.innerText = taps;
+        progressFill.style.width = (taps / maxTaps * 100) + '%';
+        // Тряска грузовика
+        truckTarget.style.transform = `translate(-50%, -50%) rotate(${Math.random()*10-5}deg) scale(${1 - taps/maxTaps*0.2})`;
     }
 
-    // Telegram
-    try{
-        if(window.Telegram?.WebApp){
-            window.Telegram.WebApp.sendData(JSON.stringify({
-                action:'roulette_result',
-                prize:win.prize==='jackpot'?jackpot:win.prize==='chance'?'chance':win.prize,
-                isJackpot:win.prize==='jackpot',
-                isChance:win.prize==='chance'
-            }));
+    function winChanceGame() {
+        overlay.style.display = 'none';
+        prizeDisplay.innerHTML = 'ПОБЕДА! <br><small style="font-size:14px">Бензовоз остановлен!</small>';
+        playJackpotSound();
+        createExplosion();
+        if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 200]);
+    }
+
+    function createExplosion() {
+        // Создаем частицы
+        const area = document.body;
+        for(let i=0; i<30; i++) {
+            let p = document.createElement('div');
+            p.className = 'particle';
+            p.innerText = Math.random() > 0.5 ? '🛢️' : '💧';
+            p.style.left = '50%'; p.style.top = '50%';
+            p.style.fontSize = '30px';
+            // Случайное направление
+            const angle = Math.random() * Math.PI * 2;
+            const dist = Math.random() * 300 + 100;
+            p.style.setProperty('--tx', Math.cos(angle)*dist + 'px');
+            p.style.setProperty('--ty', Math.sin(angle)*dist + 'px');
+            area.appendChild(p);
+            setTimeout(() => p.remove(), 1000);
         }
-    }catch(e){}
-
-    setTimeout(()=>{spinning=false;spinB.disabled=false},2000);
-}
-
-// ============= ЭКРАН ПОБЕДЫ =============
-let winTO=null;
-function showWin(emoji,text,sub,color){
-    const t=document.getElementById('winT');
-    t.innerHTML=emoji+'<br>'+text;
-    t.style.color=color;
-    t.style.textShadow=`0 0 40px ${color},0 0 80px ${color}`;
-    document.getElementById('winS').textContent=sub;
-    document.getElementById('winOv').classList.add('active');
-    if(winTO) clearTimeout(winTO);
-    winTO = setTimeout(hideWin, 5000);
-}
-function hideWin(){document.getElementById('winOv').classList.remove('active')}
-document.getElementById('winC').addEventListener('click',hideWin);
-
-// ============= КОНФЕТТИ =============
-const CCOL=['#ff006e','#00d4ff','#ffd700','#00ffaa','#a29bfe','#ff8c42','#fff','#ff4488','#00cc88'];
-function launchConfetti(cnt){
-    const lay=document.getElementById('confLayer');
-    for(let i=0;i<cnt;i++){
-        setTimeout(()=>{
-            const el=document.createElement('div');
-            el.className='confetti';
-            const w=3+Math.random()*7, h=6+Math.random()*14;
-            el.style.cssText=`width:${w}px;height:${h}px;background:${CCOL[Math.floor(Math.random()*CCOL.length)]};left:${5+Math.random()*90}%;top:-15px;animation-duration:${2+Math.random()*3}s;animation-delay:${Math.random()*.4}s;border-radius:${Math.random()>.5?'50%':'1px'};`;
-            lay.appendChild(el);
-            setTimeout(()=>el.remove(),5500);
-        },i*12);
     }
-}
 
-// ============= ДЖЕКПОТ =============
-function updJP(){jp1.textContent=jackpot;jp2.textContent=jackpot}
+    // Старт
+    drawWheel(0);
+    spinBtn.addEventListener('click', spin);
 
-// ============= ФОН: ГРУЗОВИКИ + БОЧКИ =============
-const bgC=document.getElementById('bgCanvas');
-const bg=bgC.getContext('2d');
-let bW,bH;
-function resizeBg(){bW=bgC.width=window.innerWidth;bH=bgC.height=window.innerHeight}
-resizeBg();
-window.addEventListener('resize',resizeBg);
-
-// Грузовики
-const trucks=[];
-for(let i=0;i<5;i++){
-    trucks.push({
-        x:Math.random()*bW, sp:.2+Math.random()*.4,
-        sc:.4+Math.random()*.5,
-        col:['#0077aa','#005533','#774400','#444','#003366'][i],
-        bc:2+Math.floor(Math.random()*3),
-        y: bH*.82 + Math.random()*bH*.06
-    });
-}
-
-// Плавающие бочки (декоративные)
-const barrels=[];
-for(let i=0;i<8;i++){
-    barrels.push({
-        x:Math.random()*bW, y:bH*.15+Math.random()*bH*.5,
-        sp:.1+Math.random()*.2, sz:8+Math.random()*12,
-        phase:Math.random()*Math.PI*2, drift:Math.random()*.3
-    });
-}
-
-// Звёзды
-const stars=[];
-for(let i=0;i<60;i++){
-    stars.push({
-        x:Math.random(),y:Math.random()*.5,
-        s:.3+Math.random()*1.2,
-        tw:Math.random()*Math.PI*2,
-        sp:.008+Math.random()*.015
-    });
-}
-
-function drawTruck(x,y,s,col,bc){
-    bg.save();bg.translate(x,y);bg.scale(s,s);
-
-    // Кабина
-    bg.fillStyle=col;
-    bg.beginPath();bg.roundRect(0,-22,28,22,3);bg.fill();
-    // Окно
-    bg.fillStyle='rgba(100,200,255,.3)';
-    bg.beginPath();bg.roundRect(3,-19,18,10,2);bg.fill();
-    // Кузов
-    bg.fillStyle='#3a3a3a';
-    bg.beginPath();bg.roundRect(30,-30,50,30,2);bg.fill();
-    // Бочки
-    for(let j=0;j<bc;j++){
-        bg.fillStyle='#bb5500';
-        bg.beginPath();bg.ellipse(38+j*16,-36,7,9,0,0,Math.PI*2);bg.fill();
-        bg.strokeStyle='#884400';bg.lineWidth=.8;bg.stroke();
-        // S
-        bg.fillStyle='#fff';bg.font='bold 6px Arial';bg.textAlign='center';bg.textBaseline='middle';
-        bg.fillText('S',38+j*16,-36);
-    }
-    // Колёса
-    [[10,2],[45,2],[68,2]].forEach(([wx,wy])=>{
-        bg.fillStyle='#1a1a1a';bg.beginPath();bg.arc(wx,wy,5,0,Math.PI*2);bg.fill();
-        bg.fillStyle='#444';bg.beginPath();bg.arc(wx,wy,2.5,0,Math.PI*2);bg.fill();
-    });
-
-    bg.restore();
-}
-
-function drawBarrel(x,y,sz){
-    bg.save();bg.translate(x,y);
-    bg.fillStyle='rgba(180,100,0,.15)';
-    bg.beginPath();bg.ellipse(0,0,sz,sz*1.2,0,0,Math.PI*2);bg.fill();
-    bg.strokeStyle='rgba(180,100,0,.1)';bg.lineWidth=1;bg.stroke();
-    bg.fillStyle='rgba(255,255,255,.08)';bg.font=`bold ${sz*.6}px Arial`;bg.textAlign='center';bg.textBaseline='middle';
-    bg.fillText('S',0,0);
-    bg.restore();
-}
-
-function bgLoop(){
-    // Небо
-    const sky=bg.createLinearGradient(0,0,0,bH);
-    sky.addColorStop(0,'#050510');sky.addColorStop(.4,'#0a0a1a');
-    sky.addColorStop(.8,'#0f0f1e');sky.addColorStop(1,'#08080f');
-    bg.fillStyle=sky;bg.fillRect(0,0,bW,bH);
-
-    // Звёзды
-    stars.forEach(s=>{
-        s.tw+=s.sp;
-        bg.fillStyle=`rgba(180,200,255,${.2+Math.sin(s.tw)*.2})`;
-        bg.beginPath();bg.arc(s.x*bW,s.y*bH,s.s,0,Math.PI*2);bg.fill();
-    });
-
-    // Плавающие бочки
-    barrels.forEach(b=>{
-        b.phase+=.008;
-        const bx=b.x+Math.sin(b.phase)*15;
-        const by=b.y+Math.cos(b.phase*.7)*8;
-        drawBarrel(bx,by,b.sz);
-        b.x+=b.drift;
-        if(b.x>bW+30)b.x=-30;
-    });
-
-    // Земля
-    bg.fillStyle='#0c0c14';bg.fillRect(0,bH*.8,bW,bH*.2);
-
-    // Дорога
-    bg.fillStyle='#141418';bg.fillRect(0,bH*.83,bW,bH*.17);
-    bg.strokeStyle='rgba(255,255,255,.05)';bg.lineWidth=2;bg.setLineDash([18,25]);
-    bg.beginPath();bg.moveTo(0,bH*.9);bg.lineTo(bW,bH*.9);bg.stroke();
-    bg.setLineDash([]);
-
-    // Грузовики
-    trucks.forEach(t=>{
-        t.x+=t.sp;
-        if(t.x>bW+100) t.x=-100;
-        drawTruck(t.x,t.y,t.sc,t.col,t.bc);
-    });
-
-    requestAnimationFrame(bgLoop);
-}
-
-// roundRect polyfill
-if(!CanvasRenderingContext2D.prototype.roundRect){
-    CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){
-        if(typeof r==='number')r=[r,r,r,r];
-        this.moveTo(x+r[0],y);
-        this.lineTo(x+w-r[1],y);this.quadraticCurveTo(x+w,y,x+w,y+r[1]);
-        this.lineTo(x+w,y+h-r[2]);this.quadraticCurveTo(x+w,y+h,x+w-r[2],y+h);
-        this.lineTo(x+r[3],y+h);this.quadraticCurveTo(x,y+h,x,y+h-r[3]);
-        this.lineTo(x,y+r[0]);this.quadraticCurveTo(x,y,x+r[0],y);
-        this.closePath();return this;
-    };
-}
-
-// ============= ИНИТ =============
-drawWheel(curRot);
-updJP();
-bgLoop();
-spinB.addEventListener('click', spin);
-document.body.addEventListener('click', initAudio, {once:true});
-
-// Обновляем позиции грузовиков и бочек при resize
-window.addEventListener('resize',()=>{
-    trucks.forEach(t=>t.y=bH*.82+Math.random()*bH*.06);
-});
 </script>
 </body>
 </html>
